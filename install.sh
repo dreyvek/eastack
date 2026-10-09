@@ -1,32 +1,40 @@
 #!/usr/bin/env bash
-# Install p3-stack skills for T3 Code.
+# Install eastack-t3 skills: each one linked into .agents/skills, where T3 Code
+# and Codex read skills, and mirrored into .claude/skills for Claude Code.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="${HOME}/.agents/skills"
+BASE="${HOME}"
 
 if [[ "${1:-}" == "--project" ]]; then
-  TARGET="${2:?usage: ./install.sh --project /path/to/repo}/.agents/skills"
+  BASE="$(cd "${2:?usage: ./install.sh --project /path/to/repo}" && pwd)"
 fi
 
-mkdir -p "$TARGET"
+mkdir -p "$BASE/.agents/skills" "$BASE/.claude/skills"
 installed=0
 skipped=0
 
+# Point LINK at TARGET, replacing a symlink there and refusing anything else.
+link() {
+  local target="$1" link="$2"
+  if [[ -L "$link" ]]; then
+    rm "$link"
+  elif [[ -e "$link" ]]; then
+    printf 'skip %s (exists and is not a symlink)\n' "$link"
+    skipped=$((skipped + 1))
+    return 1
+  fi
+  ln -s "$target" "$link"
+}
+
 for skill in "$ROOT"/skills/*/; do
   name="$(basename "$skill")"
-  if [[ -L "$TARGET/$name" ]]; then
-    rm "$TARGET/$name"
-  elif [[ -e "$TARGET/$name" ]]; then
-    printf 'skip %s (exists and is not a symlink)\n' "$name"
-    skipped=$((skipped + 1))
-    continue
-  fi
-  ln -s "$skill" "$TARGET/$name"
+  link "$ROOT/skills/$name" "$BASE/.agents/skills/$name" || continue
+  link "../../.agents/skills/$name" "$BASE/.claude/skills/$name" || continue
   installed=$((installed + 1))
 done
 
-printf 'linked %d skills into %s' "$installed" "$TARGET"
+printf 'linked %d skills into %s/.agents/skills and %s/.claude/skills' "$installed" "$BASE" "$BASE"
 if [[ "$skipped" -gt 0 ]]; then
   printf ' (%d skipped)' "$skipped"
 fi

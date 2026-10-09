@@ -22,8 +22,8 @@ If you are a delegated worker, your brief names exactly one file. Write only tha
 | `agent-transcripts/*.jsonl` mining | `t3_thread_read`, `t3_thread_search`; `t3_queue_list`/`t3_queue_read`/`t3_queue_edit`/`t3_queue_reorder`/`t3_queue_cancel`/`t3_queue_promote_to_steer` for queued input. |
 | `AskQuestion` | Ask plainly in the thread. `t3_pending_request_list`/`t3_pending_request_read`/`t3_pending_request_respond` answer questions in other threads. |
 | `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `browser.preview` shows a file to the user. |
-| `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-p3` writes `p3-models.md`; install is a symlink of `skills/*` into `~/.agents/skills/` (see README). |
-| `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `p3-mode`, `agents/p3-agent.md`, `p3-help`, `setup-p3`. |
+| `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-p3` writes `p3-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
+| `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `p3-mode`, `skills/p3-mode/references/p3-agent.md`, `p3-help`, `setup-p3`. |
 | Cursor custom modes ("press option+enter") | Skills are invoked by name (`/p3-mode`). No mode toggles. |
 
 Everything else in pstack transfers as written: the principles, the playbook shapes, the brief template, the reply style, the autonomy rules. Adopt it.
@@ -43,13 +43,15 @@ Keep these names exactly.
 - Frontmatter: `name`, one-line `description`, `disable-model-invocation: true` where the source has it. Drop Cursor UI fields (`icon`, `color`, `mode`, `reminder`).
 - Use T3 tool names exactly: `delegate_task`, `task_status`, `watch_pull_request`, `link_pull_request`, `schedule_task`, `t3_thread_launch`, `t3_thread_read`, `t3_thread_search`, `preview_*`, `device_*`.
 - Delegation briefs are self-contained. T3 child agents get only the brief, never the parent's context. Say this where pstack says "every brief stands alone".
+- A child resolves no path relative to a skill. A brief or plan a child reads names skill files as `<skills>/<name>/...`, and the parent fills in the absolute path of the directory that holds the skills.
 - Never bullet a Cursor tool into a skill, even as a fallback.
 
 ## Layout
 
 - `skills/<name>/SKILL.md` is a skill. `skills/principle-*/SKILL.md` are the short principles.
 - `skills/p3-mode/SKILL.md` is the mode router; its playbooks live in `skills/p3-mode/playbooks/`.
-- `agents/` holds prompt briefs for delegated roles (`p3-agent.md`, `comment-sicko.md`), not harness agent definitions.
+- A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/p3-mode/references/p3-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
+- `skills/p3-mode/scripts/worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs.
 
 ## T3 tool quick reference
 

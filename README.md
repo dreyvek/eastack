@@ -1,6 +1,6 @@
-# p3-stack
+# eastack-t3
 
-p3-stack is [pstack](https://github.com/cursor/plugins/tree/main/pstack) rebuilt for T3 Code. Same engineering discipline, native T3 orchestration.
+eastack-t3 is a fork of [p3-stack](https://github.com/uzairansaruzi/p3-stack), which is [pstack](https://github.com/cursor/plugins/tree/main/pstack) rebuilt for T3 Code. Same engineering discipline, native T3 orchestration. The skills keep p3-stack's names (`p3-mode`, `setup-p3`, `p3-help`).
 
 pstack is poteto's answer to AI slop code. It turns an agent into an engineering team: one mode skill that routes to playbooks, principles that ground every decision, and verification strict enough that you can parallelize with confidence. p3-stack keeps that system and rewires the mechanics to T3 Code's primitives:
 
@@ -14,12 +14,12 @@ pstack is poteto's answer to AI slop code. It turns an agent into an engineering
 ## Install
 
 ```bash
-git clone https://github.com/uzairansaruzi/p3-stack.git
-cd p3-stack
+git clone https://github.com/dreyvek/eastack-t3.git
+cd eastack-t3
 ./install.sh
 ```
 
-`install.sh` links every `skills/*` directory into `~/.agents/skills/`, where T3 Code reads skills. Use `./install.sh --project /path/to/repo` to install into a project's `.agents/skills/` instead.
+`install.sh` links every `skills/*` directory into `~/.agents/skills/`, where T3 Code and Codex read skills, and mirrors each link into `~/.claude/skills/` as `../../.agents/skills/<name>` for Claude Code. Use `./install.sh --project /path/to/repo` to install into a project's `.agents/skills/` and `.claude/skills/` instead. The links point into this clone, so keep it where it is.
 
 ## Get started
 

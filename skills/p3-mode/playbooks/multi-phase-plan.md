@@ -4,8 +4,8 @@
 
 1. When the change is one or two files with an obvious approach, skip the plan. Say so and stop.
 2. Settle open questions by prototype before you write. Run `playbooks/prototype.md` for each. Keep the branch, the SHA, and the screenshots for Appendix A. Ask the operator only about a product or preference call that no run can settle. Give options (the **never-block-on-the-human** principle skill).
-3. Explore in `delegate_task` workers with a self-contained brief that points at `agents/p3-agent.md` and a named model role per the Subagents section (the **guard-the-context-window** principle skill). Each returns file pointers, conventions, test commands, and entry points. No inlined dumps.
-4. Copy the skeleton below into the plan file and fill every placeholder. Unless the operator names a path, write the file under the project's `docs/`. Keep every heading and every sub-block in the order shown. One section per PR. One PR is one change with its own evidence (the **sequence-verifiable-units** principle skill). Name the execution playbook in **How to read this**. Pick between `playbooks/autopilot-full.md` and `playbooks/autopilot-stack.md` per the rule at the end of `playbooks/autopilot-stack.md`. A standing program takes `playbooks/orchestrate.md`.
+3. Explore in `delegate_task` workers with a self-contained brief that opens with `references/p3-agent.md` and a named model role per the Subagents section (the **guard-the-context-window** principle skill). Each returns file pointers, conventions, test commands, and entry points. No inlined dumps.
+4. Copy the skeleton below into the plan file and fill every placeholder. `<skills>` is the absolute path of the directory that holds p3-mode, so every owner the plan reaches can open the files it names. Unless the operator names a path, write the file under the project's `docs/`. Keep every heading and every sub-block in the order shown. One section per PR. One PR is one change with its own evidence (the **sequence-verifiable-units** principle skill). Name the execution playbook in **How to read this**. Pick between `playbooks/autopilot-full.md` and `playbooks/autopilot-stack.md` per the rule at the end of `playbooks/autopilot-stack.md`. A standing program takes `playbooks/orchestrate.md`.
 5. Write under `/technical-writing` in full, then `/unslop`. The body is one Diátaxis mode, how-to. Appendices hold explanation and reference. Each heading states the task or the finding. No long dashes. No mid-sentence colons.
 6. Check the plan against this list and fix every miss (the **encode-lessons-in-structure** principle skill). One PR section per PR between **Program checklist** and **Close the program**, each carrying the nine sub-blocks in order, **Depends on** through **Merge**; every verification block opens with the verification rule sentence; **Verify, live** names the `swarm workers` role and ten lanes with a screenshot and a pass predicate each; **Verify, perf** carries the Metric, Probe, Baseline, and Rule boxes; **Review gate** is the operator's review boxes or `None.` with none; the appendices follow **Close the program**, Prototype evidence included; no long dashes, curly quotes, or mid-sentence colons.
 7. Hand back. Post the plan path and the checklist result, then stop. Execution starts on the operator's explicit go, under the execution playbook the plan names.
@@ -21,7 +21,7 @@
 ## How to read this
 One box is one unit of work. Every box names the evidence that checks it. A nested box is a sub-step of the box above it. Check a box only when its evidence exists, a file, a log line, a screenshot, a test run, or a SHA. The body is a how-to. The appendices explain and record.
 
-The program runs `skills/p3-mode/playbooks/<execution playbook>.md`. <Who merges, and which PR ids are the operator's items that stop at merge-ready.> Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+The program runs `<skills>/p3-mode/playbooks/<execution playbook>.md`. <Who merges, and which PR ids are the operator's items that stop at merge-ready.> Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
 ## Program checklist
 ### Arm the program
@@ -48,7 +48,7 @@ The program runs `skills/p3-mode/playbooks/<execution playbook>.md`. <Who merges
 - [ ] Rebase onto current trunk before the code-ready report and babysit. Keep that merge base in fix rounds. Rebase again only at merge prep, on a `git merge-tree` conflict with trunk, or on a CI failure that comes from a change on trunk.
 
 ### Verdict and merge, for every PR
-- [ ] At the code-ready head SHA and at each later push that changes the patch, run the swarm per `skills/swarm/SKILL.md`. One gates lane. The ten live lanes from the PR's **Verify, live** block. The perf lane from its **Verify, perf** block. Two or more audit lanes, each with its own focus, that read the diff and the receipts and distrust the PR body. The root audits the receipts in the merge-ready report before the verdict.
+- [ ] At the code-ready head SHA and at each later push that changes the patch, run the swarm per `<skills>/swarm/SKILL.md`. One gates lane. The ten live lanes from the PR's **Verify, live** block. The perf lane from its **Verify, perf** block. Two or more audit lanes, each with its own focus, that read the diff and the receipts and distrust the PR body. The root audits the receipts in the merge-ready report before the verdict.
 - [ ] Clean only when every lane is `PASS`. Findings go back to the owner, including a defect that a lane filed as a note. A new head gets a fresh swarm and a fresh verdict, except for results that stay valid under the patch-id rule in `playbooks/shipping.md`.
 - [ ] <The merge or append rule from the execution playbook, with the patch-id rule from `playbooks/shipping.md`.>
 
@@ -112,7 +112,7 @@ Each live lane is a delegated worker at the PR head. Use `t3_thread_launch` with
 <Each risk with the PR it lands in and what the owner watches.>
 
 ## Appendix D. Links and reading list
-<Docs to read before editing. Which PRs get `skills/how/SKILL.md` and `skills/interrogate/SKILL.md`. The trail per `skills/show-me-your-work/SKILL.md`.>
+<Docs to read before editing. Which PRs get `<skills>/how/SKILL.md` and `<skills>/interrogate/SKILL.md`. The trail per `<skills>/show-me-your-work/SKILL.md`.>
 ````
 
 **Reply:** the plan path, the PR ids with their dependencies and the review-gated set, what the prototypes proved and what stays unproven, and the checklist result.
