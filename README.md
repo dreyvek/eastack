@@ -25,7 +25,9 @@ cd eastack-t3
 
 1. Run `/setup-p3`. It reads `orchestrator_capabilities` and writes `p3-models.md`, mapping each role (code, judgment, the review panels) to a provider and model you actually have.
 2. Use `/p3-mode` whenever you want rigorous work. It reads the request, picks a playbook, and runs the other skills as the steps need them.
-3. Stuck or unsure which skill fits? Ask `/p3-help`.
+3. Stuck or unsure which skill fits? Type `/p3-help` with a question. It runs only when typed.
+
+New here? The [guide](docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
 
 ## The mode
 
