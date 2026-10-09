@@ -1,11 +1,11 @@
 ---
-name: setup-p3
-description: Configure which models p3-stack uses per role and at what reasoning budget. Detects your available models and writes p3-models.md, which overrides the skill defaults. Use for /setup-p3, "configure p3 models", "p3 budget", or changing p3-stack's model choices.
+name: setup-eastack
+description: Configure which models eastack uses per role and at what reasoning budget. Detects your available models and writes eastack-models.md, which overrides the skill defaults. Use for /setup-eastack, "configure eastack models", "eastack budget", or changing eastack's model choices.
 ---
 
-# Setup p3
+# Setup eastack
 
-Write `p3-models.md`, a file that sets p3-stack's model per role. Default location is the current project root. Offer `~/.agents/p3-models.md` as the global option, and ask which one. A project file wins over the global one.
+Write `eastack-models.md`, a file that sets eastack's model per role. Default location is the current project root. Offer `~/.agents/eastack-models.md` as the global option, and ask which one. A project file wins over the global one.
 
 ## Steps
 
@@ -15,7 +15,7 @@ Call `orchestrator_capabilities`. It lists the providers and models you can pass
 
 ### 2. Load current state
 
-The roles are the labels shown in step 5. If `p3-models.md` already exists at the chosen location, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from the defaults in step 3(b). A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
+The roles are the labels shown in step 5. If `eastack-models.md` already exists at the chosen location, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from the defaults in step 3(b). A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
 
 ### 3. Budget, map, and confirm
 
@@ -38,10 +38,10 @@ Every real entry written must be in the `orchestrator_capabilities` result, unde
 
 ### 5. Write the file
 
-Write `p3-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels p3-mode uses. Write each entry as `<providerInstanceId>/<model>`, followed by its effort option in parentheses when step 3(b) set one. Overwrite the whole file so re-runs stay idempotent. Shape:
+Write `eastack-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels eastack-mode uses. Write each entry as `<providerInstanceId>/<model>`, followed by its effort option in parentheses when step 3(b) set one. Overwrite the whole file so re-runs stay idempotent. Shape:
 
 ```
-# p3 model configuration. One line per role. Delete a line to fall back to the skill default.
+# eastack model configuration. One line per role. Delete a line to fall back to the skill default.
 # `inherit-parent` as a value: the role runs on the parent thread's model (omit the delegate_task model). Entries in a panel list still count toward its fan-out.
 # budget: unlimited (max)
 feature, refactoring: <providerInstanceId>/<model> (<effort>)

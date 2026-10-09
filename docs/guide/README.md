@@ -1,13 +1,13 @@
-# The eastack-t3 guide
+# The eastack guide
 
-eastack-t3 descends from [pstack](https://github.com/cursor/plugins/tree/main/pstack), which poteto built for Cursor. This is pstack's guide, rewired to T3 Code.
+eastack descends from [pstack](https://github.com/cursor/plugins/tree/main/pstack), which poteto built for Cursor. This is pstack's guide, rewired to T3 Code.
 
-eastack-t3 works best when you stop micromanaging the agent. You describe what you want and how you'll know it's done. `/p3-mode` picks the playbook, runs the other skills as the steps need them, and shows you the evidence. This guide teaches that habit with realistic prompts.
+eastack works best when you stop micromanaging the agent. You describe what you want and how you'll know it's done. `/eastack-mode` picks the playbook, runs the other skills as the steps need them, and shows you the evidence. This guide teaches that habit with realistic prompts.
 
 Here's what you'll learn:
 
-1. [Set up eastack-t3](./01-setup.md). Install the skills and pick your models.
-2. [Route work through `/p3-mode`](./02-p3-mode.md). Give it a goal and watch it pick a playbook.
+1. [Set up eastack](./01-setup.md). Install the skills and pick your models.
+2. [Route work through `/eastack-mode`](./02-eastack-mode.md). Give it a goal and watch it pick a playbook.
 3. [Understand the code](./03-understand.md). A read-only investigation, then `/how`, `/why`, `/teach`, and `/recall` before you edit anything.
 4. [Design the change](./04-design.md). `/architect`, `/arena`, `/swarm`, `/interrogate`, prototypes, and plans before code locks in a shape.
 5. [Build and clean the change](./05-build-and-clean.md). The build playbooks, `/tdd`, `/unslop`, and `/no-comments`.
@@ -19,22 +19,22 @@ Here's what you'll learn:
 
 Read the pages in order the first time. After that, each page stands alone.
 
-When you're stuck, or can't tell which skill fits, type [`/p3-help`](../../skills/p3-help/SKILL.md) with your question:
+When you're stuck, or can't tell which skill fits, type [`/eastack-help`](../../skills/eastack-help/SKILL.md) with your question:
 
 ```text
-/p3-help which skill should i use to review this branch?
+/eastack-help which skill should i use to review this branch?
 ```
 
-It answers, hands you a prompt to send, and links the skill or guide page the answer came from. It doesn't start the work, because an eastack-t3 run spends real tokens, so you send the prompt when you're ready. It runs only when you type it. If you haven't run `/setup-p3` yet, it offers to, once per thread.
+It answers, hands you a prompt to send, and links the skill or guide page the answer came from. It doesn't start the work, because an eastack run spends real tokens, so you send the prompt when you're ready. It runs only when you type it. If you haven't run `/setup-eastack` yet, it offers to, once per thread.
 
 ## If you only remember one thing
 
 Give the agent a goal and a way to check it, in your own words:
 
 ```text
-/p3-mode the export writes duplicate rows when a retry lands mid-run. repro first, then fix and verify.
+/eastack-mode the export writes duplicate rows when a retry lands mid-run. repro first, then fix and verify.
 ```
 
-You don't need to name a playbook or list skills. "repro first" and a checkable outcome are all the routing signal `/p3-mode` needs. It matches the Bug fix playbook, copies the steps into a todo list, and calls the right skills as each step fires.
+You don't need to name a playbook or list skills. "repro first" and a checkable outcome are all the routing signal `/eastack-mode` needs. It matches the Bug fix playbook, copies the steps into a todo list, and calls the right skills as each step fires.
 
-Next: [Set up eastack-t3](./01-setup.md).
+Next: [Set up eastack](./01-setup.md).

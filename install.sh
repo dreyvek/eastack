@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install eastack-t3 skills: each one linked into .agents/skills, where T3 Code
+# Install eastack skills: each one linked into .agents/skills, where T3 Code
 # and Codex read skills, and mirrored into .claude/skills for Claude Code.
 set -euo pipefail
 

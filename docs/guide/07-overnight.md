@@ -20,7 +20,7 @@ Make the loop autonomous only after all four hold. Until then, run it while you 
 A good handoff has the goal, the finish condition, permissions, and an escape hatch. It doesn't need to be long:
 
 ```text
-/p3-mode im going to bed. migrate every caller to the new parser in a fresh worktree off <base>.
+/eastack-mode im going to bed. migrate every caller to the new parser in a fresh worktree off <base>.
 done means zero old callers, all parser fixtures pass, old api deleted.
 keep a decision log. don't ask me before committing.
 run until done. if you're truly stuck after a few hours, stop and write up why.
@@ -32,12 +32,12 @@ Walk through what each line buys you:
 - "done means..." turns the goal into checks every iteration can run.
 - "fresh worktree off `<base>`" keeps the run from colliding with anything else you have open.
 - "don't ask me before committing" pre-answers the permission the agent would otherwise block on.
-- "run until done" routes to the [Autonomous run playbook](../../skills/p3-mode/playbooks/autonomous-run.md), which picks its own wake mechanism. It arms `watch_pull_request` when there's an event to wait on, such as CI or a merge, and a `schedule_task` tick when there isn't, so the thread wakes to re-check the finish condition.
+- "run until done" routes to the [Autonomous run playbook](../../skills/eastack-mode/playbooks/autonomous-run.md), which picks its own wake mechanism. It arms `watch_pull_request` when there's an event to wait on, such as CI or a merge, and a `schedule_task` tick when there isn't, so the thread wakes to re-check the finish condition.
 - The escape hatch lets it stop at a genuine dead end and write up why, which beats eight hours of creative goal reinterpretation.
 
-Because you'll review this work after stepping away, `/p3-mode` routes it through [`/figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
+Because you'll review this work after stepping away, `/eastack-mode` routes it through [`/figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
 
-To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart T3 Code. The [Pause safely playbook](../../skills/p3-mode/playbooks/pause-safely.md) finishes or backs out of the current step, cancels its delegated tasks, commits a work-in-progress checkpoint, and writes a resume note. On resume, the agent reads the thread and anything you queued while it was stopped, then starts from that note. Saying "keep going" never triggers a pause.
+To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart T3 Code. The [Pause safely playbook](../../skills/eastack-mode/playbooks/pause-safely.md) finishes or backs out of the current step, cancels its delegated tasks, commits a work-in-progress checkpoint, and writes a resume note. On resume, the agent reads the thread and anything you queued while it was stopped, then starts from that note. Saying "keep going" never triggers a pause.
 
 ## What the loop does all night
 
@@ -71,27 +71,27 @@ Before the skill hands back its summary, it spawns a reviewer on a different pro
 
 The contract above drives one task to one finish condition. Some nights hold more, a queue of independent changes or a whole program. Three playbooks scale the same trust up.
 
-[Autopilot-full](../../skills/p3-mode/playbooks/autopilot-full.md) runs a queue of independent PRs to merged. Each PR gets one owner agent that carries it from build through merge, and no owner merges on its own verdict. A swarm of fresh verifiers starts a round at the owner's code-ready head and again at every later push that changes the patch. Only a clean verdict on the patch that merges authorizes the merge:
+[Autopilot-full](../../skills/eastack-mode/playbooks/autopilot-full.md) runs a queue of independent PRs to merged. Each PR gets one owner agent that carries it from build through merge, and no owner merges on its own verdict. A swarm of fresh verifiers starts a round at the owner's code-ready head and again at every later push that changes the patch. Only a clean verdict on the patch that merges authorizes the merge:
 
 ```text
-/p3-mode full autopilot on this queue. each item is independent. i want them merged by morning.
+/eastack-mode full autopilot on this queue. each item is independent. i want them merged by morning.
 ```
 
-[Autopilot-stack](../../skills/p3-mode/playbooks/autopilot-stack.md) runs the same owner loop but ships nothing. You wake up to one linear base-branch stack with a verifier's verdict on every link, and you review and land it yourself. Pick it over Autopilot-full when the changes are coupled, or when you want your own eyes on the work before anything merges:
+[Autopilot-stack](../../skills/eastack-mode/playbooks/autopilot-stack.md) runs the same owner loop but ships nothing. You wake up to one linear base-branch stack with a verifier's verdict on every link, and you review and land it yourself. Pick it over Autopilot-full when the changes are coupled, or when you want your own eyes on the work before anything merges:
 
 ```text
-/p3-mode autopilot these five changes but stack them, don't ship. i'll land the stack in the morning.
+/eastack-mode autopilot these five changes but stack them, don't ship. i'll land the stack in the morning.
 ```
 
-[Orchestrate](../../skills/p3-mode/playbooks/orchestrate.md) is for a program that outlives any single agent: multi-day, many stacked PRs, fleets of delegated workers under one standing coordinator thread. The coordinator authors briefs, drains what its workers finish, keeps the merge frontier green, and never writes code itself. It's deliberately heavy machinery. If one agent could finish the work in a session, the playbook itself routes you back to the overnight contract above:
+[Orchestrate](../../skills/eastack-mode/playbooks/orchestrate.md) is for a program that outlives any single agent: multi-day, many stacked PRs, fleets of delegated workers under one standing coordinator thread. The coordinator authors briefs, drains what its workers finish, keeps the merge frontier green, and never writes code itself. It's deliberately heavy machinery. If one agent could finish the work in a session, the playbook itself routes you back to the overnight contract above:
 
 ```text
-/p3-mode orchestrate the store migration. own it until every package is converted and merged. i'll check in twice a day.
+/eastack-mode orchestrate the store migration. own it until every package is converted and merged. i'll check in twice a day.
 ```
 
 ## Give each program its own coordinator thread
 
-Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch, and it runs its recurring ticks through `schedule_task`. Start your prompts to the coordinator with `/p3-mode`, and every brief it writes opens with the [worker brief](../../skills/p3-mode/references/p3-agent.md), so its workers follow the playbooks too.
+Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch, and it runs its recurring ticks through `schedule_task`. Start your prompts to the coordinator with `/eastack-mode`, and every brief it writes opens with the [worker brief](../../skills/eastack-mode/references/eastack-agent.md), so its workers follow the playbooks too.
 
 A few habits help:
 
@@ -102,7 +102,7 @@ A few habits help:
 One prompt can carry a whole program, from research through execution:
 
 ```text
-/p3-mode refactor this repo so its architecture is more agent friendly. use /correct and /architect on past commits and review comments to find the mistakes agents make most here. use /recall for context from past threads. answer open questions with prototypes instead of asking me. come back with a plan backed by real data. once i approve it, run it with autopilot-stack or autopilot-full, and ask me which.
+/eastack-mode refactor this repo so its architecture is more agent friendly. use /correct and /architect on past commits and review comments to find the mistakes agents make most here. use /recall for context from past threads. answer open questions with prototypes instead of asking me. come back with a plan backed by real data. once i approve it, run it with autopilot-stack or autopilot-full, and ask me which.
 ```
 
 ## Let loops start themselves

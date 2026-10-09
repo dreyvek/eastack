@@ -1,12 +1,12 @@
 ---
-name: p3-mode
-description: p3 agent style for concise, detailed responses, deliberate delegation, unslopped prose, simple code, and verified work. Use for p3, /p3-mode, or requests to work in this style.
+name: eastack-mode
+description: eastack agent style for concise, detailed responses, deliberate delegation, unslopped prose, simple code, and verified work. Use for eastack, /eastack-mode, or requests to work in this style.
 disable-model-invocation: true
 ---
 
-# P3 mode
+# Eastack mode
 
-Skills are invoked by name (`/p3-mode`). There are no mode toggles.
+Skills are invoked by name (`/eastack-mode`). There are no mode toggles.
 
 ## Non-negotiables
 
@@ -88,9 +88,9 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-**Spawn every worker with `delegate_task`.** Code-writing delegates and ad-hoc helpers open their brief with the text of `references/p3-agent.md`, which sends the worker to this file. Replace its `<skills>` with the absolute path of the directory that holds this skill, since the worker resolves nothing relative to it. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own roles for diverse-model review. Respect what the skill prescribes.
+**Spawn every worker with `delegate_task`.** Code-writing delegates and ad-hoc helpers open their brief with the text of `references/eastack-agent.md`, which sends the worker to this file. Replace its `<skills>` with the absolute path of the directory that holds this skill, since the worker resolves nothing relative to it. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own roles for diverse-model review. Respect what the skill prescribes.
 
-**Defaults for every `delegate_task` call.** `mode: "async"` for background work, then drain with `task_status` (stop with `task_cancel`). T3 child agents get only the brief and never inherit parent context, so every brief stands alone: the goal, file pointers not inlined context, constraints, and the report format you expect. Pick models by named role, never by slug. `setup-p3` writes the role lines to `p3-models.md`, resolved against `orchestrator_capabilities`. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) read `hardest tasks`, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your fast code model. Per-role lines in `p3-models.md` override the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model. Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`). Prose and judgment read `judgment and prose`. Use `t3_thread_launch` only when a worker needs its own thread, worktree, or branch, and keep one writer per worktree.
+**Defaults for every `delegate_task` call.** `mode: "async"` for background work, then drain with `task_status` (stop with `task_cancel`). T3 child agents get only the brief and never inherit parent context, so every brief stands alone: the goal, file pointers not inlined context, constraints, and the report format you expect. Pick models by named role, never by slug. `setup-eastack` writes the role lines to `eastack-models.md`, resolved against `orchestrator_capabilities`. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) read `hardest tasks`, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your fast code model. Per-role lines in `eastack-models.md` override the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model. Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`). Prose and judgment read `judgment and prose`. Use `t3_thread_launch` only when a worker needs its own thread, worktree, or branch, and keep one writer per worktree.
 
 You own every delegate's work. Review the diff and write your own summary, don't pass through what it said. A second opinion is the same prompt against a different model. Agreement is high-signal.
 

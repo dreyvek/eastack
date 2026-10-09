@@ -1,6 +1,6 @@
-# p3-stack contributor guide
+# eastack contributor guide
 
-p3-stack adapts [pstack](https://github.com/cursor/plugins/tree/main/pstack) by poteto for T3 Code. Same skills, same language, rewired to T3's native orchestration.
+eastack adapts [pstack](https://github.com/cursor/plugins/tree/main/pstack) by poteto for T3 Code, forked from [p3-stack](https://github.com/uzairansaruzi/p3-stack). Same skills, same language, rewired to T3's native orchestration.
 
 A skill reads as if it were written for T3 Code first. Keep pstack's sentences verbatim wherever they still apply. Replace every Cursor mechanism with the T3 Code equivalent below.
 
@@ -10,10 +10,10 @@ If you are a delegated worker, your brief names exactly one file. Write only tha
 
 ## Cursor to T3 Code map
 
-| pstack | p3-stack |
+| pstack | eastack |
 |---|---|
 | `Task` tool, `subagent_type`, `run_in_background` | `delegate_task` with a self-contained brief; `mode: "async"` for background work; `task_status` to drain; `task_cancel` to stop |
-| Model slugs (`claude-opus-5-5-max`, `grok-4.7-xhigh-fast`, `gpt-5.6-sol-max`) | Named roles resolved from `orchestrator_capabilities` by `setup-p3` (role names below). Never hardcode a slug. |
+| Model slugs (`claude-opus-5-5-max`, `grok-4.7-xhigh-fast`, `gpt-5.6-sol-max`) | Named roles resolved from `orchestrator_capabilities` by `setup-eastack` (role names below). Never hardcode a slug. |
 | "cloud agent", `environment: "cloud"`, `cloud_base_branch` | A delegated child task. Use `t3_thread_launch` only when the worker needs its own top-level thread, worktree, or branch. |
 | "each worker gets its own worktree or branch" | `t3_thread_launch` with `workspaceStrategy`: `{"type":"worktree","baseRef":...,"branch":...}`, `{"type":"existing_worktree","worktreePath":...}`, or `{"type":"root"}`. One writer per worktree. |
 | `/loop`, poll loops, `scripts/watch-pr` | `watch_pull_request`: T3 watches the PR and wakes the thread on checks finishing, new comments, or conflicts. Arm it, end the turn, triage on wake. For other cadences use `schedule_task`. |
@@ -22,15 +22,15 @@ If you are a delegated worker, your brief names exactly one file. Write only tha
 | `agent-transcripts/*.jsonl` mining | `t3_thread_read`, `t3_thread_search`; `t3_queue_list`/`t3_queue_read`/`t3_queue_edit`/`t3_queue_reorder`/`t3_queue_cancel`/`t3_queue_promote_to_steer` for queued input. |
 | `AskQuestion` | Ask plainly in the thread. `t3_pending_request_list`/`t3_pending_request_read`/`t3_pending_request_respond` answer questions in other threads. |
 | `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `browser.preview` shows a file to the user. |
-| `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-p3` writes `p3-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
-| `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `p3-mode`, `skills/p3-mode/references/p3-agent.md`, `p3-help`, `setup-p3`. |
-| Cursor custom modes ("press option+enter") | Skills are invoked by name (`/p3-mode`). No mode toggles. |
+| `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-eastack` writes `eastack-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
+| `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `eastack-mode`, `skills/eastack-mode/references/eastack-agent.md`, `eastack-help`, `setup-eastack`. |
+| Cursor custom modes ("press option+enter") | Skills are invoked by name (`/eastack-mode`). No mode toggles. |
 
 Everything else in pstack transfers as written: the principles, the playbook shapes, the brief template, the reply style, the autonomy rules. Adopt it.
 
 ## Role names
 
-Code work reads its line in `p3-models.md`: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`. Prose and judgment read `judgment and prose`; the hardest changes read `hardest tasks`.
+Code work reads its line in `eastack-models.md`: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`. Prose and judgment read `judgment and prose`; the hardest changes read `hardest tasks`.
 
 Panels and investigators: `how explorer`, `how explainer`, `why investigators`, `why synthesizer`, `arena runners`, `arena cross-judge pool`, `swarm workers`, `architect runners`, `interrogate reviewers`, `reflect tooling`, `reflect judgment, divergent, synthesizer`.
 
@@ -49,9 +49,9 @@ Keep these names exactly.
 ## Layout
 
 - `skills/<name>/SKILL.md` is a skill. `skills/principle-*/SKILL.md` are the short principles.
-- `skills/p3-mode/SKILL.md` is the mode router; its playbooks live in `skills/p3-mode/playbooks/`.
-- A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/p3-mode/references/p3-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
-- `skills/p3-mode/scripts/worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs.
+- `skills/eastack-mode/SKILL.md` is the mode router; its playbooks live in `skills/eastack-mode/playbooks/`.
+- A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/eastack-mode/references/eastack-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
+- `skills/eastack-mode/scripts/worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs.
 
 ## T3 tool quick reference
 
