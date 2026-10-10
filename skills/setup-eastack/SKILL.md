@@ -38,7 +38,7 @@ Every real entry written must be in the `orchestrator_capabilities` result, unde
 
 ### 5. Write the file
 
-Write `eastack-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels eastack-mode uses. Write each entry as `<providerInstanceId>/<model>`, followed by its effort option in parentheses when step 3(b) set one. Overwrite the whole file so re-runs stay idempotent. Shape:
+Write `eastack-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels eastack-mode uses. Write each entry as `<providerInstanceId>/<model>`, followed by its effort option in parentheses when step 3(b) set one, and `, fast` inside them when the user chose the model's fast option (`serviceTier: priority` on Codex, `fastMode` on Claude and Cursor), as in `(xhigh, fast)`. Overwrite the whole file so re-runs stay idempotent. Shape:
 
 ```
 # eastack model configuration. One line per role. Delete a line to fall back to the skill default.
