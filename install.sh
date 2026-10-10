@@ -39,3 +39,21 @@ if [[ "$skipped" -gt 0 ]]; then
   printf ' (%d skipped)' "$skipped"
 fi
 printf '\n'
+
+# Register hooks/eastack-mode.py as a UserPromptSubmit hook, replacing an
+# earlier registration so a moved clone leaves no stale path behind.
+python3 - "$BASE/.claude/settings.json" "python3 \"$ROOT/hooks/eastack-mode.py\"" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path, command = Path(sys.argv[1]), sys.argv[2]
+settings = json.loads(path.read_text()) if path.exists() else {}
+groups = settings.setdefault("hooks", {}).setdefault("UserPromptSubmit", [])
+for group in groups:
+    group["hooks"] = [h for h in group.get("hooks", []) if not h.get("command", "").endswith('hooks/eastack-mode.py"')]
+groups[:] = [group for group in groups if group["hooks"]]
+groups.append({"hooks": [{"type": "command", "command": command}]})
+path.write_text(json.dumps(settings, indent=2, ensure_ascii=False) + "\n")
+print(f"registered the eastack-mode hook in {path}")
+PY

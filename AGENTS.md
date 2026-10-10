@@ -24,7 +24,7 @@ If you are a delegated worker, your brief names exactly one file. Write only tha
 | `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `browser.preview` shows a file to the user. |
 | `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-eastack` writes `eastack-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
 | `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `eastack-mode`, `skills/eastack-mode/references/eastack-agent.md`, `eastack-help`, `setup-eastack`. |
-| Cursor custom modes ("press option+enter") | Skills are invoked by name (`/eastack-mode`). No mode toggles. |
+| Cursor custom modes ("press option+enter"), the `mode` and `reminder` fields | `hooks/eastack-mode.py`, a Claude Code `UserPromptSubmit` hook that `install.sh` registers. `/eastack-mode` turns the mode on for the thread, every later prompt carries the reminder, and "eastack-mode off" ends it. |
 
 Everything else in pstack transfers as written: the principles, the playbook shapes, the brief template, the reply style, the autonomy rules. Adopt it.
 
@@ -52,6 +52,7 @@ Keep these names exactly.
 - `skills/eastack-mode/SKILL.md` is the mode router; its playbooks live in `skills/eastack-mode/playbooks/`.
 - A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/eastack-mode/references/eastack-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
 - `skills/eastack-mode/scripts/worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs.
+- `hooks/eastack-mode.py` keeps eastack-mode on for a Claude Code thread. `install.sh` registers it.
 
 ## T3 tool quick reference
 

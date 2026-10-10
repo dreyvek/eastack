@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Eastack mode
 
-Skills are invoked by name (`/eastack-mode`). There are no mode toggles.
+Skills are invoked by name (`/eastack-mode`). In Claude Code the mode stays on for the rest of the thread. A hook adds a one-line reminder to every later prompt until the user says "eastack-mode off".
 
 ## Non-negotiables
 

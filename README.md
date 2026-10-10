@@ -19,7 +19,7 @@ cd eastack
 ./install.sh
 ```
 
-`install.sh` links every `skills/*` directory into `~/.agents/skills/`, where T3 Code and Codex read skills, and mirrors each link into `~/.claude/skills/` as `../../.agents/skills/<name>` for Claude Code. Use `./install.sh --project /path/to/repo` to install into a project's `.agents/skills/` and `.claude/skills/` instead. The links point into this clone, so keep it where it is.
+`install.sh` links every `skills/*` directory into `~/.agents/skills/`, where T3 Code and Codex read skills, and mirrors each link into `~/.claude/skills/` as `../../.agents/skills/<name>` for Claude Code. Use `./install.sh --project /path/to/repo` to install into a project's `.agents/skills/` and `.claude/skills/` instead. It also registers `hooks/eastack-mode.py` as a `UserPromptSubmit` hook in the matching `.claude/settings.json`. Once you send `/eastack-mode` in a Claude Code thread, that hook keeps the mode on with a one-line reminder on every later message, until you say "eastack-mode off". The links and the hook point into this clone, so keep it where it is.
 
 ## Get started
 

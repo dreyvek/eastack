@@ -57,6 +57,6 @@ Pick something real but small, and describe it the way you'd describe it to a co
 
 Watch the todo list. Its first items are the matched playbook's steps copied in, the Feature playbook for this prompt. If `/eastack-mode` skips a step, the step stays in the list with `skip: <reason>`, so you can see what it chose not to do.
 
-From here you can type normal follow-ups. There's no mode to toggle on. Typing `/eastack-mode` attaches the skill to one message, and it fades as the thread moves on, so start each new task with `/eastack-mode`.
+From here you can type normal follow-ups. In Claude Code the mode stays on for the rest of the thread. A hook adds a one-line reminder to each message, and "eastack-mode off" ends it. With other providers, `/eastack-mode` attaches the skill to one message and fades as the thread moves on, so start each new task with `/eastack-mode`.
 
 Next: [Route work through `/eastack-mode`](./02-eastack-mode.md).
