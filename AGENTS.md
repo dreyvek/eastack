@@ -40,7 +40,7 @@ Keep these names exactly.
 
 - Thin over complete. Keep the shortest file that still changes behavior. Cut Cursor-only edge-case protocol and forge-specific branches before cutting any rule.
 - pstack's voice: terse, declarative, lowercase-friendly, no filler.
-- Frontmatter: `name`, one-line `description`, `disable-model-invocation: true` where the source has it. Drop Cursor UI fields (`icon`, `color`, `mode`, `reminder`).
+- Frontmatter: `name`, one-line `description`, `disable-model-invocation: true` where the source has it, except `unslop`, which other skills load by name. Drop Cursor UI fields (`icon`, `color`, `mode`, `reminder`).
 - Use T3 tool names exactly: `delegate_task`, `task_status`, `watch_pull_request`, `link_pull_request`, `schedule_task`, `t3_thread_launch`, `t3_thread_read`, `t3_thread_search`, `preview_*`, `device_*`.
 - Delegation briefs are self-contained. T3 child agents get only the brief, never the parent's context. Say this where pstack says "every brief stands alone".
 - A child resolves no path relative to a skill. A brief or plan a child reads names skill files as `<skills>/<name>/...`, and the parent fills in the absolute path of the directory that holds the skills.
