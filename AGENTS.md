@@ -55,7 +55,7 @@ Keep these names exactly.
 - `skills/<name>/SKILL.md` is a skill. `skills/principle-*/SKILL.md` are the short principles.
 - `skills/eastack-mode/SKILL.md` is the mode router; its playbooks live in `skills/eastack-mode/playbooks/`.
 - A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/eastack-mode/references/eastack-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
-- `skills/eastack-mode/scripts/` holds eastack-mode's tools. `worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs. `orch/orch.ts` keeps orchestrate bookkeeping in plain files. `watch-pr/` is vendored from upstream and not yet run by a playbook. The Bun tools install their pinned dependencies through `bootstrap.ts` on first run; `node_modules/` stays git-ignored.
+- `skills/eastack-mode/scripts/` holds eastack-mode's tools. `worktree-audit.sh` is the audit the Worktree cleanup playbook runs. It reads only, apart from fetching the base ref, and `worktree-audit.test.sh` tests it. `orch/orch.ts` keeps orchestrate bookkeeping in plain files. `watch-pr/` is vendored from upstream and not yet run by a playbook. The Bun tools install their pinned dependencies through `bootstrap.ts` on first run; `node_modules/` stays git-ignored.
 - `hooks/eastack-mode.py` keeps eastack-mode on for a Claude Code thread. `install.sh` registers it.
 - `drift.md` lists every difference from upstream pstack and the condition that would remove it.
 
