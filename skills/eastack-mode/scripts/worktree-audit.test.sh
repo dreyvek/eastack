@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Tests for worktree-audit.sh's differences from upstream (drift rows D-X1,
-# D-X2, D-X7). Builds a throwaway repo and T3 state database in a temporary
+# Tests for worktree-audit.sh's differences from upstream (drift rows D-X1
+# and D-X7). Builds a throwaway repo and T3 state database in a temporary
 # directory, runs the audit against them, checks each worktree's bucket, and
 # deletes everything it created.
 #
@@ -39,30 +39,27 @@ mkdir -p "$wts"
 
 # Every worktree starts clean, merged and without a remote branch, so the
 # signal under test decides its bucket.
-for name in clean-merged recent recent-sub sibling deleted pinned "wip space"; do
+for name in clean-merged recent recent-sub sibling deleted "wip space"; do
 	git -C "$repo" worktree add -q -b "${name// /-}" "$wts/$name" main
 done
 # D-X7: tracked edits in a worktree whose path holds a space.
 echo edit >> "$wts/wip space/file"
 
-# thread <worktreePath> <age: now|old> <pinned: yes|no> [deleted]
+# thread <worktreePath> [deleted], updated an hour ago
 sqlite3 "$db" "create table orchestration_v2_projection_threads (
 	thread_id text primary key, updated_at text not null, deleted_at text, payload_json text not null)"
 n=0
 thread() {
 	n=$((n + 1))
 	path=$(printf '%s' "$1" | sed "s/'/''/g")
-	[ "$2" = now ] && mod="'-1 hours'" || mod="'-30 days'"
-	[ "$3" = yes ] && pin="strftime('%Y-%m-%dT%H:%M:%fZ', 'now')" || pin="null"
-	[ "${4:-}" = deleted ] && del="strftime('%Y-%m-%dT%H:%M:%fZ', 'now')" || del="null"
+	[ "${2:-}" = deleted ] && del="strftime('%Y-%m-%dT%H:%M:%fZ', 'now')" || del="null"
 	sqlite3 "$db" "insert into orchestration_v2_projection_threads values ('t$n',
-		strftime('%Y-%m-%dT%H:%M:%fZ', 'now', $mod), $del, json_object('worktreePath', '$path', 'pinnedAt', $pin))"
+		strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-1 hours'), $del, json_object('worktreePath', '$path'))"
 }
-thread "$wts/recent" now no
-thread "$wts/recent-sub/ui" now no
-thread "$wts/sibling-r37" now no
-thread "$wts/deleted" now no deleted
-thread "$wts/pinned" old yes
+thread "$wts/recent"
+thread "$wts/recent-sub/ui"
+thread "$wts/sibling-r37"
+thread "$wts/deleted" deleted
 
 # expect <label> <worktree path> <bucket>
 expect() {
@@ -82,7 +79,6 @@ expect "D-X1: recent T3 thread" "$wts/recent" verify-recent-thread
 expect "D-X1: recent thread bound under the worktree" "$wts/recent-sub" verify-recent-thread
 expect "D-X1: thread bound to a longer sibling name" "$wts/sibling" safe
 expect "D-X1: deleted thread" "$wts/deleted" safe
-expect "D-X2: pinned thread" "$wts/pinned" hold-pinned
 expect "D-X7: tracked edits in a path with a space" "$wts/wip space" hold-wip
 
 # D-X1: an unreadable database warns and shows no thread, as upstream does

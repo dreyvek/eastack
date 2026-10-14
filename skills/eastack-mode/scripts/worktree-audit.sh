@@ -62,8 +62,8 @@ elif raw=$(gh pr list --author "@me" --state all --limit 1000 \
 fi
 [ -s "$prs" ] || echo "[]" > "$prs"
 
-# T3 records each thread's worktree binding and pin in its state database
-# (D-X1). An unreadable one means no thread is known.
+# T3 records each thread's worktree binding in its state database (D-X1). An
+# unreadable one means no thread is known.
 db="$HOME/.t3/userdata/statev2.sqlite"
 sqlite3 -readonly "$db" "select 1 from orchestration_v2_projection_threads limit 1" >/dev/null 2>&1 \
 	|| { echo "warn: cannot read T3 threads from $db; LAST_THREAD shows none" >&2; db=""; }
@@ -103,16 +103,14 @@ git worktree list --porcelain | awk '/^worktree /{print substr($0, 10)}' | while
 		'.[] | select(.head==$b) | "#\(.number)/\(.state)"' "$prs" 2>/dev/null | head -1)
 	[ -z "$pr" ] && pr="-"
 
-	# Newest live T3 thread bound to this worktree, and whether any bound thread
-	# is pinned (D-X1, D-X2). Match the path alone or followed by "/" so
-	# glint-482 does not match glint-482-r37.
-	last="-"; last_ts=0; pinned=0
+	# Newest live T3 thread bound to this worktree (D-X1). Match the path alone
+	# or followed by "/" so glint-482 does not match glint-482-r37.
+	last="-"; last_ts=0
 	if [ -n "$db" ]; then
 		q=$(printf '%s' "$wt" | sed "s/'/''/g")
-		read -r last_ts pinned < <(sqlite3 -readonly -separator ' ' "$db" "
-			select coalesce(strftime('%s', max(updated_at)), 0), coalesce(max(pinned), 0) from (
-				select updated_at, json_extract(payload_json, '\$.pinnedAt') is not null as pinned,
-					json_extract(payload_json, '\$.worktreePath') as path
+		last_ts=$(sqlite3 -readonly "$db" "
+			select coalesce(strftime('%s', max(updated_at)), 0) from (
+				select updated_at, json_extract(payload_json, '\$.worktreePath') as path
 				from orchestration_v2_projection_threads where deleted_at is null)
 			where path = '$q' or substr(path, 1, length('$q') + 1) = '$q/'" 2>/dev/null)
 		if [ "$last_ts" -gt 0 ] 2>/dev/null; then
@@ -123,7 +121,6 @@ git worktree list --porcelain | awk '/^worktree /{print substr($0, 10)}' | while
 	case "$dirty" in wip:*) bucket=hold-wip ;; *)
 		case "$pr" in */open|*/draft) bucket=hold-open-pr ;; *)
 			if [ "$recent" = yes ]; then bucket=verify-recent-thread
-			elif [ "$pinned" = 1 ]; then bucket=hold-pinned # D-X2
 			elif [ "$merged" = YES ] || [ "$pr" != "-" ]; then bucket=safe
 			else bucket=review; fi ;;
 		esac ;;
