@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "eastack-mode-tools",
+      "name": "@cursor-skill/eastack-mode-tools",
       "dependencies": {
         "commander": "14.0.0",
       },

@@ -14,18 +14,18 @@ Every spawn is a `delegate_task` with a self-contained brief, `mode: "async"`, d
 
 If the scope is ambiguous, state your interpretation and explore. The user can redirect.
 
-- **Simple** (a single module, a small utility, a narrow question such as "how does function X work"): no explorers. Spawn one explainer that explores and explains in one pass, built from `references/explainer-prompt.md` without the explorer-findings section. Go to step 4.
+- **Simple** (a single module, a small utility, a narrow question such as "how does function X work"): no explorers. Spawn one explainer with `delegate_task` that explores and explains in one pass, built from `references/explainer-prompt.md` without the explorer-findings section. Drain it with `task_status`. Go to step 4.
 - **Complex** (a subsystem spanning multiple files or services, a cross-cutting feature, a full architectural overview): go to step 2.
 
 When in doubt, take the simple path.
 
 ## 2. Explore (complex only)
 
-Decompose the question into 2 to 4 angles, each a distinct slice of the subsystem. Spawn all explorers in a single message, each with `references/explorer-prompt.md` and its angle filled in.
+Decompose the question into 2 to 4 angles, each a distinct slice of the subsystem. Spawn all explorers with `delegate_task` in a single message, each with `references/explorer-prompt.md` and its angle filled in.
 
 ## 3. Synthesize (complex only)
 
-Once all explorers have returned, spawn one explainer with `references/explainer-prompt.md` and every explorer's findings filled in.
+Once `task_status` shows all explorers have returned, use `delegate_task` to spawn one explainer with `references/explainer-prompt.md` and every explorer's findings filled in. Drain it with `task_status`.
 
 ## 4. Present
 

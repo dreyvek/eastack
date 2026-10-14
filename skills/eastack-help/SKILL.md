@@ -35,7 +35,7 @@ When `eastack-models.md` is missing and it matters, ask whether the user wants t
 ## Get set up
 
 1. Install by cloning the repo and running `./install.sh`. It links every skill into `~/.agents/skills/`, where T3 Code and Codex read skills, and mirrors each link into `~/.claude/skills/` for Claude Code; `./install.sh --project /path/to/repo` targets a project's `.agents/skills/` and `.claude/skills/` instead.
-2. Run [`/setup-eastack`](../setup-eastack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes `eastack-models.md`. The file applies to new sessions.
+2. Run [`/setup-eastack`](../setup-eastack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes `eastack-models.md`. The file applies to new threads.
 3. Start a real task with `/eastack-mode`, a goal, and a check that can pass or fail.
 
 Installing changes nothing until the user invokes a skill. Only `/setup-eastack` loads from the user's words. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
@@ -46,7 +46,7 @@ If cost is the worry, say where the tokens go and how to spend fewer. eastack sp
 
 `/eastack-mode` matches the task to a playbook, copies the playbook's steps into the todo list, and runs the other skills as the steps need them. A step it skips stays in the list as `skip: <reason>`. A good prompt states the goal and how to tell it's done. It doesn't list skills, because a hand-written sequence tends to drop or reorder steps the playbook would keep. Read [`references/prompting.md`](references/prompting.md) before you help word one. [Guide page 2](../../docs/guide/02-eastack-mode.md) has examples.
 
-Skills are invoked by name (`/eastack-mode`). In Claude Code the mode stays on for the rest of the thread once you send it. A hook adds a one-line reminder to every later message, so a new task needs no second `/eastack-mode`, and "eastack-mode off" ends it. Other providers have no hook, so start each new task there with `/eastack-mode`. Mid-chat, "new task" makes the mode match a fresh playbook. `/eastack-mode` already opens the briefs of the subagents its playbook steps spawn with [`references/eastack-agent.md`](../eastack-mode/references/eastack-agent.md). To get the same style from a subagent of your own, open its brief with that text, its `<skills>` replaced by the absolute path of the directory that holds `eastack-mode`.
+Skills are invoked by name (`/eastack-mode`). In Claude Code the mode stays on for the rest of the thread once you send it. A hook adds a one-line reminder to every later message, so a new task needs no second `/eastack-mode`, and "eastack-mode off" ends it. Other providers have no hook, so start each new task there with `/eastack-mode`. Mid-chat, "new task" makes the mode match a fresh playbook. `/eastack-mode` already opens the briefs of the subagents its playbook steps spawn with [`references/eastack-agent.md`](../eastack-mode/references/eastack-agent.md). To get the same style from a subagent of your own, spawn it with `delegate_task` and open its brief with that text, its `<skills>` replaced by the absolute path of the directory that holds `eastack-mode`.
 
 ## Pick a skill
 
@@ -125,7 +125,7 @@ Principles are one-rule skills that `/eastack-mode` reads and cites in its repli
 |---|---|
 | The mode stopped applying after a few turns | In Claude Code, check that `install.sh` registered the hook under `hooks.UserPromptSubmit` in `.claude/settings.json`, then restart the agent session. With other providers, start each new task with `/eastack-mode`. |
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
-| A new model choice had no effect | The file from `/setup-eastack` applies to new sessions. Start one. |
+| A new model choice had no effect | The file from `/setup-eastack` applies to new threads. Start one. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
 | A skill didn't load on its own | Only `/setup-eastack` loads from the user's words. The others load when the user types them or when `/eastack-mode` runs them, and it doesn't run every skill. |
 | Parallel agents overwrote each other | Give each worker its own worktree through `t3_thread_launch`, and keep one writer per worktree. |
