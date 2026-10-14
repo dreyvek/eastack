@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Each delegation below names a role line in the `eastack-models.md` file and a default. Set `target` to that line's value, or to the default if the file or the line is missing. Leave `target` unset when the value is `auto` or `inherit-parent`. If `delegate_task` rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from `orchestrator_capabilities`. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
+Each spawn below names a role line in the `eastack-models.md` file and a default. Set `target` to that line's value, or to the default if the file or the line is missing. Leave `target` unset when the value is `auto` or `inherit-parent`. If `delegate_task` rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from `orchestrator_capabilities`. Pick each subagent's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
 
 Every brief stands alone. A T3 child task gets only the brief, never this conversation. T3 child tasks can write, so each brief must say read-only, inspect only, no writes: no file edits, no git mutations, no writes through any MCP.
 

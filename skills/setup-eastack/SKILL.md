@@ -11,7 +11,7 @@ Write `eastack-models.md`, a file that sets eastack's model per role. Default lo
 
 ### 1. Detect available models
 
-Call `orchestrator_capabilities`. That is the dependable source. Keep only the provider instances with `canRunChildTask: true`, since `delegate_task` rejects the others. The detected set is every slug that resolves against them, per Slug to target in the Subagents section of the **eastack-mode** skill. If you cannot detect any, show the user each provider's `constraints` and ask the user to paste the slugs they have access to. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs.
+Call `orchestrator_capabilities`. That is the dependable source. Keep only the provider instances with `canRunChildTask: true`, since `delegate_task` rejects the others. The detected set is every slug that resolves against them, per Slug to target in the Subagents section of the **eastack-mode** skill. If you cannot detect any, show the user each provider's `constraints` and ask the user to paste the slugs they have access to. Ask the same for a usable instance whose catalog lists no models: T3 checks no model id against such an instance. Each slug the user confirms joins the detected set as `<providerInstanceId>/<model>`, with the instance the user names. The catalog lists no options for it, so write it with no effort or `-fast` token rather than guess an option. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs.
 
 ### 2. Load current state
 
@@ -32,7 +32,7 @@ The default role-to-model mapping is the file shape shown in step 5 below. If `e
 
 ### 4. Validate
 
-Every real slug written must be in the detected set. `inherit-parent` and `auto` always pass. If a chosen real slug is not available, stop and ask again.
+Every real slug written must be in the detected set, which includes the slugs the user confirmed in step 1. `inherit-parent` and `auto` always pass. If a chosen real slug is not available, stop and ask again.
 
 ### 5. Write the file
 

@@ -22,7 +22,7 @@ Reviewers get only their brief, never the parent's context. Pass the thread id; 
 
 One turn, three `delegate_task` calls with `mode: "async"`. Reviewers need tool access to look up the tickets, chat threads, and observability traces the transcript references, so do not restrict their tools.
 
-Each reviewer and the synthesizer name a role line in the `eastack-models.md` file and a default. Set `target` to that line's value, or to the default if the file or the line is missing. Leave `target` unset when the value is `auto` or `inherit-parent`. If `delegate_task` rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from `orchestrator_capabilities`. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
+Each reviewer and the synthesizer name a role line in the `eastack-models.md` file and a default. Set `target` to that line's value, or to the default if the file or the line is missing. Leave `target` unset when the value is `auto` or `inherit-parent`. If `delegate_task` rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from `orchestrator_capabilities`. Pick each subagent's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
 
 | Lens | Role line | Default `model` | Prompt template |
 |---|---|---|---|
