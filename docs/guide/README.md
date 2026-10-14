@@ -25,7 +25,7 @@ When you're stuck, or can't tell which skill fits, type [`/eastack-help`](../../
 /eastack-help which skill should i use to review this branch?
 ```
 
-It answers, hands you a prompt to send, and links the skill or guide page the answer came from. It doesn't start the work, because an eastack run spends real tokens, so you send the prompt when you're ready. It runs only when you type it. If you haven't run `/setup-eastack` yet, it offers to, once per thread.
+It answers, hands you a prompt to send, and links the skill or guide page the answer came from. It doesn't start the work, because an eastack run spends real tokens, so you send the prompt when you're ready. It runs only when you type it.
 
 ## If you only remember one thing
 

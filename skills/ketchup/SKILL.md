@@ -12,7 +12,7 @@ Use [`/bro`](../bro/SKILL.md)'s voice, not its task: plain words, short sentence
 
 ## Gather what changed
 
-Keep this turn read-only. Make visuals only from what you already have: do not change code, start an app or a job, or post anything outside this thread. Collect your own work since that message, reports from delegated tasks (`task_status`) and launched threads (`t3_thread_read`), and messages from anyone else in this thread. Check the current state of each PR, CI run, or agent this thread touched: `gh` for a PR or CI run, `task_status` or `t3_thread_read` for an agent. Read the decision log too, if the run kept one. Check each number you will show against the facts it comes from, and say so when you correct one.
+Keep this turn read-only. Make visuals only from what you already have: do not change code, start an app or a job, or post anything outside this thread. Collect your own work since that message, reports from delegated tasks (`task_status`) and launched threads (`t3_thread_read`), and messages from anyone else in this thread. Check the current state of each PR, CI run, or agent this thread touched: `gh` for a PR or CI run, `task_status` or `t3_thread_read` for an agent. Check each number you will show against the facts it comes from, and say so when you correct one.
 
 An action item is a decision or step only the user can take, such as a product choice, an approval, an irreversible action, or access you lack. Include any still waiting on the user, even one raised before their last message. Work you can still do yourself is not an action item. Never make up a call to fill the reply. A step the user did not ask for and the work does not need is not an action item, unless it is irreversible and waiting on the user: give it one action line, no visual, and skip what happens if the user does not answer.
 
@@ -30,7 +30,7 @@ Show each action item as a before and after, side by side, in a visual. For a ch
 
 ## Visuals
 
-A visual is a picture: a screenshot saved with `preview_snapshot` (`save=true`), a screenshot or video that already exists, a Mermaid diagram, a chart or diagram on a self-contained HTML page that you check with `html_preview` and publish with `html_render`, or a generated image. A Markdown table is not a visual, even with before and after columns.
+A visual is a picture: a screenshot, a video, a Mermaid diagram, a chart or diagram on a self-contained HTML page that you check with `html_preview` and publish with `html_render`, or a generated image. A Markdown table is not a visual, even with before and after columns.
 
 Keep each visual small enough to read at a glance: at most six boxes, with at most eight words in each, not counting "No screenshot yet." Write labels as plain words a person would say, not tags like "Tests: pass". Group small items into one box. A fact that needs a sentence belongs in the text, or nowhere.
 

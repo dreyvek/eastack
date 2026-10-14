@@ -1,10 +1,10 @@
 # Explorer Prompt Template
 
-Build each explorer's `delegate_task` brief from this template, filling in the placeholders.
+Build each explorer's `delegate_task` brief from this template. Fill in the placeholders.
 
 ---
 
-This exploration is read-only: inspect only, no writes, no git commands.
+This exploration is read-only: inspect only, no writes, no git mutations.
 
 Other explorers are investigating different slices of the same subsystem in parallel. Don't try to cover everything. Focus on your assigned angle and go deep.
 

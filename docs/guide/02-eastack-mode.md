@@ -66,8 +66,6 @@ For a noisy report, such as a long thread or a vague bug, make the restatement t
 
 A misreading shows up in the restatement, before any code exists. Correct it there, and it costs you one message instead of one wrong fix.
 
-`/eastack-help` answers prompt questions from the same advice, kept short in [`prompting.md`](../../skills/eastack-help/references/prompting.md).
-
 ## Follow up short
 
 When the conversation already carries the context, the prompt shrinks to almost nothing. All of these are enough:

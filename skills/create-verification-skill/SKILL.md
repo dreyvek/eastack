@@ -10,11 +10,11 @@ Every serious project needs a scripted way to drive the real app and prove behav
 
 ## 1. Interview the repo, not the user
 
-Answer these from the codebase and only ask the user, plainly in the thread, what you cannot observe:
+Answer these from the codebase and only ask the user what you cannot observe:
 
 - **Surface:** what does a user actually touch? A web UI, a CLI/TUI, a desktop app, an API, a mobile app, a library? A repo can have several; pick the primary one and note the rest.
 - **Run:** how does the app start locally? Prefer the repo's own documented dev command (package scripts, Makefile, README quickstart). Note ports, env vars, seed data, auth.
-- **Drive:** how can an agent interact with it programmatically? Existing harnesses first — Playwright/Cypress specs, expect scripts, PTY helpers, curl-able endpoints, a debug port. Only then pick a generic recipe: `preview_open`, `preview_navigate`, `preview_snapshot`, `preview_click`, and `preview_type` for web UIs; `device_open`, `device_screenshot`, and the agent-device CLI for simulators; a tmux/PTY harness for CLI/TUI; plain HTTP for services.
+- **Drive:** how can an agent interact with it programmatically? Existing harnesses first — Playwright/Cypress specs, expect scripts, PTY helpers, curl-able endpoints, a debug port. Only then pick a generic recipe: browser/CDP for web and Electron, with `preview_open`, `preview_navigate`, `preview_snapshot`, `preview_click`, and `preview_type` for a web UI; `device_open`, `device_screenshot`, and the agent-device CLI for simulators; a tmux/PTY harness for CLI/TUI; plain HTTP for services.
 - **Observe:** what evidence can be captured? Screenshots, `preview_recording_start`/`preview_recording_stop` recordings, terminal transcripts, response bodies, logs, exit codes, DB state.
 - **Isolate:** can two instances run side by side (ports, data dirs, profiles)? If not, say so in the generated skill: refusing to double-drive a shared instance beats corrupting the user's session.
 
@@ -43,4 +43,4 @@ Run its own instructions end to end once: launch, doctor, drive ONE mapped featu
 
 ## 5. Offer the maintenance loop
 
-Point the user at `/maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask; if they do, run it with `schedule_task`.
+Point the user at `/maintain-verification-skill` for keeping the map honest as the app changes. Suggest a cadence only if they ask.

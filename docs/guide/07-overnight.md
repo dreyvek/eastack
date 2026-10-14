@@ -32,7 +32,7 @@ Walk through what each line buys you:
 - "done means..." turns the goal into checks every iteration can run.
 - "fresh worktree off `<base>`" keeps the run from colliding with anything else you have open.
 - "don't ask me before committing" pre-answers the permission the agent would otherwise block on.
-- "run until done" routes to the [Autonomous run playbook](../../skills/eastack-mode/playbooks/autonomous-run.md), which picks its own wake mechanism. It arms `watch_pull_request` when there's an event to wait on, such as CI or a merge, and a `schedule_task` tick when there isn't, so the thread wakes to re-check the finish condition.
+- "run until done" routes to the [Autonomous run playbook](../../skills/eastack-mode/playbooks/autonomous-run.md), which re-checks the finish condition on events or a heartbeat.
 - The escape hatch lets it stop at a genuine dead end and write up why, which beats eight hours of creative goal reinterpretation.
 
 Because you'll review this work after stepping away, `/eastack-mode` routes it through [`/figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
@@ -91,7 +91,7 @@ The contract above drives one task to one finish condition. Some nights hold mor
 
 ## Give each program its own coordinator thread
 
-Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch, and it runs its recurring ticks through `schedule_task`. Start your prompts to the coordinator with `/eastack-mode`, and every brief it writes opens with the [worker brief](../../skills/eastack-mode/references/eastack-agent.md), so its workers follow the playbooks too.
+Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch. Start your prompts to the coordinator with `/eastack-mode`, and every brief it writes opens with the [worker brief](../../skills/eastack-mode/references/eastack-agent.md), so its workers follow the playbooks too.
 
 A few habits help:
 

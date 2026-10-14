@@ -1,6 +1,6 @@
 # Recipes and pitfalls
 
-Prompts worth copying, then the mistakes everyone makes once. Swap in your own paths and finish conditions. The recipes are deliberately informal. That's how they get typed in practice, and the skills read intent fine. `/eastack-help` keeps a short set in [`recipes.md`](../../skills/eastack-help/references/recipes.md).
+Prompts worth copying, then the mistakes everyone makes once. Swap in your own paths and finish conditions. The recipes are deliberately informal. That's how they get typed in practice, and the skills read intent fine.
 
 ![She tastes a finished dish while robots cook from a recipe box, with pinned cards reading /how and /tdd above the counter.](./images/recipes.jpg)
 
@@ -95,7 +95,7 @@ The fix lands in the repo as architecture, a type, a lint, or a test, so the nex
 ## Ask how without starting the work
 
 ```text
-/eastack-help how should i word a prompt to fix a flaky test?
+/eastack-help how do i get eastack-mode to stay on every turn?
 ```
 
 You get an answer, a prompt to send, and a link to the source. Nothing runs until you send that prompt.
