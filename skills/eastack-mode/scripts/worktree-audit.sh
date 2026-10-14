@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Worktree prune audit. Classifies every git worktree by size, merge state,
-# uncommitted and unpushed work, remote/PR state, and the newest T3 thread bound
-# to it. Emits a table sorted by size with a suggested bucket. It reads only,
-# apart from fetching the base ref. Never deletes anything; deletion stays a
-# human-gated step in the playbook.
+# Read-only worktree prune audit. Classifies every git worktree by size, merge
+# state, uncommitted work, remote/PR state, and the newest T3 thread bound to
+# it. Emits a table sorted by size with a suggested bucket. Never
+# deletes anything; deletion stays a human-gated step in the playbook.
 #
 # Usage: worktree-audit.sh [-b|--base <ref>] [repo-path]
 #   repo-path defaults to the current repo.
@@ -28,14 +27,9 @@ repo="${1:-$(git rev-parse --show-toplevel 2>/dev/null)}"
 cd "$repo" || exit 1
 git rev-parse --git-dir >/dev/null 2>&1 || { echo "error: not a git repo: $repo" >&2; exit 1; }
 
-prs=$(mktemp); wtlist=$(mktemp); bindings=$(mktemp)
-trap 'rm -f "$prs" "$wtlist" "$bindings"' EXIT
-
-# NUL-separated, so paths keep their spaces. The main worktree is the first
-# entry; everything else is a candidate.
-git worktree list --porcelain -z > "$wtlist" || { echo "error: cannot list worktrees" >&2; exit 1; }
-IFS= read -r -d '' main_wt < "$wtlist"
-main_wt="${main_wt#worktree }"
+# Main worktree is the first entry; everything else is a candidate. The path
+# is the rest of the line, since it may hold spaces (D-X7).
+main_wt=$(git worktree list --porcelain | awk '/^worktree /{print substr($0, 10); exit}')
 
 if [ -z "$base" ]; then
 	for cand in "$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)" origin/main origin/master; do
@@ -55,159 +49,88 @@ esac
 git rev-parse --verify --quiet "$base^{commit}" >/dev/null 2>&1 || { echo "error: base ref not found: $base" >&2; exit 1; }
 
 # PR state by branch, fetched once as [{number, state, head}] with a lowercase
-# state. If gh or jq fails, an open PR could be missed, so PR state is unknown.
-prs_known=no
-if raw=$(gh pr list --author "@me" --state all --limit 1000 \
-		--json number,state,headRefName 2>/dev/null) \
-	&& printf '%s' "$raw" | jq -e 'if type == "array" then
-		[.[] | {number, state: (.state | ascii_downcase), head: .headRefName}]
-		else error("not a list") end' > "$prs" 2>/dev/null; then
-	prs_known=yes
-else
-	echo "warn: cannot list PRs with gh; PR is unknown and no row buckets as safe" >&2
+# state. Origin when its CLI can read this repo's PRs, otherwise gh. Empty when
+# neither can.
+prs=$(mktemp)
+if command -v origin >/dev/null 2>&1 \
+	&& raw=$(origin pr list --author "@me" --state all --limit 1000 \
+		--json number,status,headRef 2>/dev/null); then
+	printf '%s' "$raw" | jq '[.[] | {number, state: .status, head: .headRef}]' > "$prs" 2>/dev/null
+elif raw=$(gh pr list --author "@me" --state all --limit 1000 \
+	--json number,state,headRefName 2>/dev/null); then
+	printf '%s' "$raw" | jq '[.[] | {number, state: (.state | ascii_downcase), head: .headRefName}]' > "$prs" 2>/dev/null
 fi
+[ -s "$prs" ] || echo "[]" > "$prs"
 
-# physical <absolute path>: the path with symlinks, ".", "..", and repeated and
-# trailing slashes resolved. A path that does not fully exist resolves its
-# longest existing prefix that way and appends the missing rest as written,
-# less repeated and trailing slashes. Fails on a relative path, on a prefix it
-# cannot enter, and on a "." or ".." after the first missing component, whose
-# parent is unknown.
-physical() {
-	case "$1" in /*) ;; *) return 1 ;; esac
-	if [ -d "$1" ]; then (cd -P -- "$1" 2>/dev/null && pwd -P); return; fi
-	local part dir="" rest="" top IFS=/
-	set -f
-	for part in $1; do
-		if [ -z "$part" ]; then continue
-		elif [ -n "$rest" ]; then
-			case "$part" in .|..) set +f; return 1 ;; esac
-			rest="$rest/$part"
-		elif [ -d "$dir/$part" ]; then dir="$dir/$part"
-		else rest="/$part"; fi
-	done
-	set +f
-	top=$(cd -P -- "${dir:-/}" 2>/dev/null && pwd -P) || return 1
-	printf '%s\n' "${top%/}$rest"
-}
-
-# T3 records each thread's worktree binding and pin in its state database. The
-# MCP tools expose neither per worktree: t3_worktree_status reports only the
-# calling thread, and t3_worktree_list skips detached worktrees. T3 stores the
-# path it was given, so bindings and worktrees compare by physical path. A
-# binding that cannot be read or resolved could belong to any worktree, so it
-# makes every row unknown, and unknown never buckets as safe.
-db="${T3_STATE_DB:-$HOME/.t3/userdata/statev2.sqlite}"
-threads=no
-if raw=$(sqlite3 -readonly -json "$db" "
-		select json_type(payload_json, '\$.worktreePath') as type,
-			json_extract(payload_json, '\$.worktreePath') as path,
-			updated_at as updated,
-			updated_at >= strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-4 days') as recent,
-			json_extract(payload_json, '\$.pinnedAt') is not null as pinned
-		from orchestration_v2_projection_threads
-		where deleted_at is null and coalesce(json_type(payload_json, '\$.worktreePath'), 'null') <> 'null'" 2>/dev/null) \
-	&& rows=$(printf '%s' "$raw" | jq -r '.[] |
-		if .type == "text" and (.path | test("^/[^\t\n]*$"))
-			and (.updated | type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[^\t\n]*$"))
-			and (.recent == 0 or .recent == 1) and (.pinned == 0 or .pinned == 1)
-		then [.path, .updated, .recent, .pinned] | map(tostring) | join("\t")
-		else error("bad binding") end' 2>/dev/null); then
-	threads=yes
-	if [ -n "$rows" ]; then
-		while IFS=$'\t' read -r path updated recent pinned; do
-			real=$(physical "$path") || { threads=no; break; }
-			printf '%s\t%s\t%s\t%s\n' "$real" "$updated" "$recent" "$pinned"
-		done <<< "$rows" > "$bindings"
-	fi
-fi
-[ "$threads" = yes ] \
-	|| echo "warn: cannot read T3 threads from $db; LAST_THREAD is unknown and no row buckets as safe" >&2
+# T3 records each thread's worktree binding and pin in its state database
+# (D-X1). An unreadable one means no thread is known.
+db="$HOME/.t3/userdata/statev2.sqlite"
+sqlite3 -readonly "$db" "select 1 from orchestration_v2_projection_threads limit 1" >/dev/null 2>&1 \
+	|| { echo "warn: cannot read T3 threads from $db; LAST_THREAD shows none" >&2; db=""; }
 now=$(date +%s)
 
 echo "# base: $base"
-printf "SIZE\tAGE\tMERGED\tDIRTY\tREMOTE\tPR\tLAST_THREAD\tPINNED\tBUCKET\tWORKTREE\n"
+printf "SIZE\tAGE\tMERGED\tDIRTY\tREMOTE\tPR\tLAST_THREAD\tBUCKET\tWORKTREE\n"
 
-while IFS= read -r -d '' line; do
-	case "$line" in "worktree "*) wt="${line#worktree }" ;; *) continue ;; esac
+git worktree list --porcelain | awk '/^worktree /{print substr($0, 10)}' | while read -r wt; do
 	[ "$wt" = "$main_wt" ] && continue
 
-	# Any signal git or the database cannot read is unknown: its column prints
-	# "?" and the row cannot bucket as safe.
-	unknown=no
-	[ "$threads" = yes ] || unknown=yes
-
 	size=$(du -sh "$wt" 2>/dev/null | awk '{print $1}')
-	head=$(git -C "$wt" rev-parse --verify --quiet HEAD 2>/dev/null) || { head=""; unknown=yes; }
+	head=$(git -C "$wt" rev-parse HEAD 2>/dev/null)
 	head_ts=$(git -C "$wt" log -1 --format='%ct' HEAD 2>/dev/null || echo 0)
 	age=$([ "$head_ts" -gt 0 ] 2>/dev/null && echo "$(( (now - head_ts) / 86400 ))d" || echo "?")
 
 	# Squash-merged branches are not ancestors of the base, so PR state is the
 	# real signal; merge-base only catches fast-forward/rebase merges.
-	merged="?"
-	if [ -n "$head" ]; then
-		git merge-base --is-ancestor "$head" "$base" 2>/dev/null
-		case $? in 0) merged=YES ;; 1) merged=no ;; *) unknown=yes ;; esac
-	fi
+	git merge-base --is-ancestor "$head" "$base" 2>/dev/null && merged=YES || merged=no
 
 	# Distinguish real WIP (tracked edits) from disposable untracked scratch.
-	if ! porcelain=$(git -C "$wt" status --porcelain 2>/dev/null); then dirty="?"; unknown=yes
-	elif [ -z "$porcelain" ]; then dirty=clean
+	porcelain=$(git -C "$wt" status --porcelain 2>/dev/null)
+	if [ -z "$porcelain" ]; then dirty=clean
 	elif printf '%s\n' "$porcelain" | grep -qv '^??'; then
 		dirty="wip:$(printf '%s\n' "$porcelain" | grep -cv '^??')"
 	else dirty="scratch:$(printf '%s\n' "$porcelain" | grep -c '^??')"; fi
 
-	branch=$(git -C "$wt" symbolic-ref --quiet --short HEAD 2>/dev/null)
-	case $? in
-	0)
-		git -C "$wt" show-ref --verify --quiet "refs/remotes/origin/$branch"
-		case $? in
-		0)
-			if ahead=$(git -C "$wt" rev-list --count "origin/$branch..HEAD" 2>/dev/null) \
-				&& [ "$ahead" -ge 0 ] 2>/dev/null \
-				&& upstream=$(git -C "$wt" rev-parse --verify --quiet "origin/$branch^{commit}" 2>/dev/null) \
-				&& [ -n "$head" ]; then
-				if [ "$upstream" = "$head" ]; then remote=pushed
-				elif [ "$ahead" -gt 0 ]; then remote="ahead$ahead"
-				else remote=behind; fi
-			else remote="?"; unknown=yes; fi ;;
-		1) remote=no-remote ;;
-		*) remote="?"; unknown=yes ;;
-		esac ;;
-	1) branch=""; remote=detached ;;
-	*) branch=""; remote="?"; unknown=yes ;;
-	esac
+	branch=$(git -C "$wt" symbolic-ref --quiet --short HEAD 2>/dev/null || echo "")
+	if [ -z "$branch" ]; then remote=detached
+	elif git -C "$wt" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+		[ "$(git -C "$wt" rev-parse "origin/$branch" 2>/dev/null)" = "$head" ] \
+			&& remote=pushed \
+			|| remote="ahead$(git -C "$wt" rev-list --count "origin/$branch..HEAD" 2>/dev/null)"
+	else remote=no-remote; fi
 
-	if [ "$prs_known" = no ]; then pr="?"; unknown=yes
-	elif [ -z "$branch" ]; then pr="-"
-	elif ! pr=$(jq -r --arg b "$branch" \
-		'[.[] | select(.head==$b) | "#\(.number)/\(.state)"] | .[0] // "-"' "$prs" 2>/dev/null); then
-		pr="?"; unknown=yes
-	fi
+	pr=$([ -n "$branch" ] && jq -r --arg b "$branch" \
+		'.[] | select(.head==$b) | "#\(.number)/\(.state)"' "$prs" 2>/dev/null | head -1)
+	[ -z "$pr" ] && pr="-"
 
-	# Newest live thread bound to this worktree, whether it is within four
-	# days, and whether any bound thread is pinned.
-	last="?"; recent=no; pinned="?"
-	if [ "$threads" = yes ]; then
-		if [ -d "$wt" ] && real=$(physical "$wt") \
-			&& m=$(REAL="$real" awk -F'\t' '
-				$1 == ENVIRON["REAL"] { n++; if ($2 > max) max = $2; if ($3 == 1) r = 1; if ($4 == 1) p = 1 }
-				END { printf "%s\t%s\t%s\n", n ? substr(max, 1, 10) : "-", r ? "yes" : "no", p ? "yes" : "no" }' "$bindings"); then
-			IFS=$'\t' read -r last recent pinned <<< "$m"
-		else unknown=yes; fi
+	# Newest live T3 thread bound to this worktree, and whether any bound thread
+	# is pinned (D-X1, D-X2). Match the path alone or followed by "/" so
+	# glint-482 does not match glint-482-r37.
+	last="-"; last_ts=0; pinned=0
+	if [ -n "$db" ]; then
+		q=$(printf '%s' "$wt" | sed "s/'/''/g")
+		read -r last_ts pinned < <(sqlite3 -readonly -separator ' ' "$db" "
+			select coalesce(strftime('%s', max(updated_at)), 0), coalesce(max(pinned), 0) from (
+				select updated_at, json_extract(payload_json, '\$.pinnedAt') is not null as pinned,
+					json_extract(payload_json, '\$.worktreePath') as path
+				from orchestration_v2_projection_threads where deleted_at is null)
+			where path = '$q' or substr(path, 1, length('$q') + 1) = '$q/'" 2>/dev/null)
+		if [ "$last_ts" -gt 0 ] 2>/dev/null; then
+			last=$(date -r "$last_ts" '+%Y-%m-%d' 2>/dev/null); fi
 	fi
+	recent=$([ "$last_ts" -gt 0 ] 2>/dev/null && [ $(( (now - last_ts) / 86400 )) -le 4 ] && echo yes || echo no)
 
 	case "$dirty" in wip:*) bucket=hold-wip ;; *)
-		if [ "$pinned" = yes ]; then bucket=hold-pinned
-		else case "$pr" in */open) bucket=hold-open-pr ;; *)
+		case "$pr" in */open|*/draft) bucket=hold-open-pr ;; *)
 			if [ "$recent" = yes ]; then bucket=verify-recent-thread
-			else case "$remote" in ahead*) bucket=hold-unpushed ;; *)
-				if [ "$unknown" = no ] && { [ "$merged" = YES ] || [ "$pr" != "-" ]; }; then bucket=safe
-				else bucket=review; fi ;;
-			esac; fi ;;
-		esac; fi ;;
+			elif [ "$pinned" = 1 ]; then bucket=hold-pinned # D-X2
+			elif [ "$merged" = YES ] || [ "$pr" != "-" ]; then bucket=safe
+			else bucket=review; fi ;;
+		esac ;;
 	esac
 
-	printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" \
-		"$size" "$age" "$merged" "$dirty" "$remote" "$pr" "$last" "$pinned" "$bucket" "$wt"
-done < "$wtlist" | sort -t$'\t' -k1,1 -rh
+	printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" \
+		"$size" "$age" "$merged" "$dirty" "$remote" "$pr" "$last" "$bucket" "$wt"
+done | sort -t$'\t' -k1,1 -rh
+
+rm -f "$prs"
