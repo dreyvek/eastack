@@ -32,7 +32,7 @@ cd eastack
 
 New here? The [eastack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. Stuck, or unsure which skill fits? Ask [`/eastack-help`](./skills/eastack-help/SKILL.md). It runs only when typed.
 
-That's it. The other skills are situational; the mode skill uses them for you as needed.
+That's it. The other skills are situational; the mode skill uses them for you as needed. Out of the box, code delegates (feature, refactoring, bug fix, perf, hillclimb) and swarm workers go to Opus 5.5 at high reasoning, while the hardest changes, prose, and judgment go to Opus 5.5 at xhigh. Explorers, investigators and reflect's tooling reviewer go to Grok. The default panels pair Opus 5.5 with GPT-6.1 Sol and GPT-6 Astra, and Shipping's verifiers run on GPT-6 Astra. [`/setup-eastack`](./skills/setup-eastack/SKILL.md) changes any of it.
 
 ## Usage
 
@@ -256,7 +256,9 @@ T3 Code's plan mode works well with eastack. But pstack's author doesn't believe
 
 Type [`/automate-me`](./skills/automate-me/SKILL.md). It mines your recent threads, drafts a `<your-name>-mode` skill from how you've actually worked, and routes through eastack underneath. You keep eastack as the base and end up with your own routing skill alongside `eastack-mode`.
 
-Models are configurable too. Type [`/setup-eastack`](./skills/setup-eastack/SKILL.md). It detects the models you have access to and writes `eastack-models.md`, mapping each role (code, judgment, the review panels) to a provider and model.
+Models are configurable too. Type [`/setup-eastack`](./skills/setup-eastack/SKILL.md). It detects the models you have access to and writes `eastack-models.md`, mapping each role (code, judgment, the review panels) to a model. Every skill reads it and falls back to sensible defaults when the file is absent, so you override only what you want.
+
+When a default changes, a file written before the change still pins the old default. Delete those role lines, or delete the file, then run `/setup-eastack` again. A rerun keeps any role whose model differs from the default.
 
 ## Automations
 

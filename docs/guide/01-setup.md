@@ -22,13 +22,13 @@ Run:
 /setup-eastack
 ```
 
-[`/setup-eastack`](../../skills/setup-eastack/SKILL.md) reads `orchestrator_capabilities` to find the providers and models you have, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `eastack-models.md`, a small file every eastack skill reads, at the project root or globally at `~/.agents/eastack-models.md`. A project file wins over the global one.
+[`/setup-eastack`](../../skills/setup-eastack/SKILL.md) detects the models you have access to, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `eastack-models.md`, a small file every eastack skill reads, at the project root or globally at `~/.agents/eastack-models.md`. A project file wins over the global one.
 
-The `large` budget targets `xhigh`, using the highest supported option at or below it. `unlimited` takes the highest reasoning option `orchestrator_capabilities` exposes for each model. `medium` and `small` lower the reasoning and spend fewer tokens.
+The defaults run at `xhigh` reasoning, the same as the `large` budget, except the code roles and `swarm workers`, which run at `high`. `unlimited` lifts each model to its highest tier, up to `max`. Opus goes to `max`. Grok tops out at `xhigh`, so it stays there. `medium` and `small` lower the reasoning and spend fewer tokens.
 
-eastack ships no default models. Every entry in the file is a provider and model `orchestrator_capabilities` returned, so a skill reads the role's model from `eastack-models.md` and never names one you can't run. A rerun of `/setup-eastack` keeps any role you changed.
+You only override what you care about. A role with no line in the file keeps the skill's default. To restore a default, delete that role's line. A rerun of `/setup-eastack` keeps any role whose model differs from the default. When a default changes, a file written before the change still pins the old default, so delete those role lines, or delete the file, then run `/setup-eastack` again.
 
-You might be wondering what happens if you'd rather not pick. Set a role to `inherit-parent` and the skill omits the model in `delegate_task`, so the child runs on the parent thread's model. `inherit-parent` is not a model. For a panel role the value is a list, and one `delegate_task` runs per entry, so the list length sets the panel size. Setup also configures `swarm workers`, the default model for every `/swarm` worker unless a race names a model for each arm.
+You might be wondering what happens if you use Auto. Set a role to `inherit-parent` or `auto` and eastack omits the `delegate_task` `target`, so the subagent inherits your parent thread's model. Both values mean the same thing, and neither is a model slug. For a panel role the value is a list, and one subagent runs per entry, so the list length sets the panel size. Setup also configures `swarm workers`, the default model for every `/swarm` worker unless a race names a model for each arm.
 
 ## Accept the verification offer, or don't
 
@@ -45,7 +45,7 @@ After setup, start a new thread. `eastack-models.md` applies to new sessions.
 eastack spends extra tokens on subagents and review panels. That's the price of the rigor. To spend fewer:
 
 - Rerun `/setup-eastack` and pick a smaller reasoning budget or cheaper models. A strong model in the main thread with cheaper, faster models in the code roles is a good split.
-- Set a role to `inherit-parent` so it runs on the thread's own model.
+- Set a role to `auto` or `inherit-parent` so it runs on the thread's own model.
 - Shorten a panel list. Each entry runs one subagent.
 - Save `/eastack-mode` for work that needs rigor. A small, obvious edit doesn't.
 

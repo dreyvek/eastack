@@ -64,7 +64,7 @@ Correct the log, not the story. The audit never edits or removes a row, even an 
 
 ## Cross-model review of the trail
 
-Before handing back, spawn a reviewer with `delegate_task` (`mode: "async"`, drained with `task_status`) on a different provider or model family from the one that did the work, resolved through `orchestrator_capabilities`; never hardcode a slug. Self-review is not a substitute. Its brief stands alone, since T3 child agents get only the brief, never this conversation, so it names the log and the thread id. The reviewer reads the audit trail and the run's transcript, paging that thread's activity the same way, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
+Before handing back, spawn a reviewer with `delegate_task` (`mode: "async"`, drained with `task_status`) on a different model family from the one that did the work. Self-review is not a substitute. Its brief stands alone, since T3 child agents get only the brief, never this conversation, so it names the log and the thread id. The reviewer reads the audit trail and the run's transcript, paging that thread's activity the same way, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
 
 - Decisions logged with weak or absent evidence.
 - Verification steps skipped or claimed without proof in the transcript.

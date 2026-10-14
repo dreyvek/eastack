@@ -11,56 +11,55 @@ Write `eastack-models.md`, a file that sets eastack's model per role. Default lo
 
 ### 1. Detect available models
 
-Call `orchestrator_capabilities`. It lists the providers and models you can pass to `delegate_task` in this session, custom models included, with each one's provider instance ID and any reasoning options. That is the only source. It also lists providers that are disabled, not installed or not signed in, with `canRunChildTask: false` and the reasons in `constraints`, and `delegate_task` rejects them. Keep only the providers with `canRunChildTask: true`: their models are the detected set every later step uses. If no detected model remains, stop and show the user each provider's `constraints`. Never write a provider or model outside the detected set. `inherit-parent` is always valid even though it is not a detected model.
+Call `orchestrator_capabilities`. That is the dependable source. Keep only the provider instances with `canRunChildTask: true`, since `delegate_task` rejects the others. The detected set is every slug that resolves against them, per Slug to target in the Subagents section of the **eastack-mode** skill. If you cannot detect any, show the user each provider's `constraints` and ask the user to paste the slugs they have access to. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs.
 
 ### 2. Load current state
 
-The roles are the labels shown in step 5. If `eastack-models.md` already exists at the chosen location, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from the defaults in step 3(b). A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
+The default role-to-model mapping is the file shape shown in step 5 below. If `eastack-models.md` already exists at the chosen location, read it and treat its `# budget` line and its role values as the current choices. Otherwise start from those defaults. A line whose role is not in step 5, such as `how critics`, is from a retired role. Drop it.
 
 ### 3. Budget, map, and confirm
 
-**(a) Ask for a budget.** Ask plainly in the thread. Offer these four options with these exact labels, and name the current budget when the file records one. With no file, say that `large` is the default.
+**(a) Ask for a budget.** Ask plainly in the thread. Offer these four options with these exact labels, and name the current budget when the file records one. With no file, say that `large` matches the skill defaults apart from the code roles and `swarm workers`, which default to `high`.
 
 - `unlimited — max reasoning`
 - `large — xhigh reasoning`
 - `medium — high reasoning`
 - `small — medium reasoning`
 
-**(b) Apply it.** Build the working table. On a fresh run, give code roles (`feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`) and the explorer, investigator, and swarm roles the fastest strong coding model detected. Give `judgment and prose`, `hardest tasks`, the explainer, the synthesizers, and `reflect tooling` the most capable model detected. Fill each panel role with one entry per distinct provider detected, up to three. On a re-run, keep any role the user changed.
+**(b) Apply it.** Build the working table from the skill defaults, and on a re-run keep any role you changed by family, list, or alias (`inherit-parent`, `auto`). `unlimited`, `large`, `medium`, and `small` set the effort token of every real slug, panel entries included, to `max`, `xhigh`, `high`, or `medium`. The effort token is the last token, or the one before a trailing `fast`, on the ladder `max` > `xhigh` > `high` > `medium` > `low`. If the result is not a detected slug, use the same family's detected slug with the highest effort at or below the target, else mark the role as needing a choice. `inherit-parent` and `auto` do not change. So `unlimited` turns `claude-opus-5-5-xhigh` into `claude-opus-5-5-max`. Grok slugs top out at `xhigh`, so under `unlimited` the fallback puts Grok at `xhigh` and keeps `grok-4.7-xhigh-fast` as it is. `large` keeps the `xhigh` defaults and turns `claude-opus-5-5-high` into `claude-opus-5-5-xhigh`. `small` turns them into `claude-opus-5-5-medium` and `grok-4.7-medium-fast`.
 
-When the catalog exposes reasoning options for a model, `unlimited`, `large`, `medium`, and `small` set the effort option of every real entry, panel entries included, to `max`, `xhigh`, `high`, or `medium`. The ladder is `max` > `xhigh` > `high` > `medium` > `low`. If the model does not expose the target, use the highest option at or below it, else mark the role as needing a choice. `inherit-parent` does not change. When the catalog exposes no reasoning options, map roles only and drop effort tokens; the budget label is still recorded.
-
-**(c) Show the roles and confirm.** Show every role with its model, marking any entry not in the detected set as needing a choice. When the entry's provider is in the catalog with `canRunChildTask: false`, quote its `constraints` beside the entry. Also list each line step 2 dropped. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` (the role runs on the parent thread's model, so omit the model in `delegate_task`) as the options. For panel roles (arena runners, architect runners, interrogate reviewers) the value is a list, and one `delegate_task` runs per entry, `inherit-parent` entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose provider differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm.
+**(c) Show the roles and confirm.** Show every role with its model, marking any real slug not in the detected set as needing a choice. When the slug's instance is in the catalog with `canRunChildTask: false`, quote its `constraints` beside it. When a chosen model is offered by more than one instance, show which instance the bare slug resolves to, and write the `<providerInstanceId>/` prefix only if the user wants another. Also list each line step 2 dropped. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` and `auto` (both mean: this role runs on the parent thread's model, which is how Auto users stay on Auto) as the options. Ask plainly in the thread. For panel roles (arena runners, architect runners, interrogate reviewers) the value is a list, and one subagent runs per entry, alias entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose model family differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm. `verifier` is the model for each Shipping verifier.
 
 ### 4. Validate
 
-Every real entry written must be in the detected set, under the provider instance it came from, so its provider has `canRunChildTask: true`. `inherit-parent` always passes. If a chosen entry is not available, stop and ask again.
+Every real slug written must be in the detected set. `inherit-parent` and `auto` always pass. If a chosen real slug is not available, stop and ask again.
 
 ### 5. Write the file
 
-Write `eastack-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels eastack-mode uses. Write each entry as `<providerInstanceId>/<model>`, followed by its effort option in parentheses when step 3(b) set one, and `, fast` inside them when the user chose the model's fast option (`serviceTier: priority` on Codex, `fastMode` on Claude and Cursor), as in `(xhigh, fast)`. Overwrite the whole file so re-runs stay idempotent. Shape:
+Write `eastack-models.md` with a `# budget` line with the chosen label and its target effort, and one line per role, using the same labels eastack-mode uses. Overwrite the whole file so re-runs stay idempotent. Shape:
 
 ```
 # eastack model configuration. One line per role. Delete a line to fall back to the skill default.
-# `inherit-parent` as a value: the role runs on the parent thread's model (omit the delegate_task model). Entries in a panel list still count toward its fan-out.
+# `inherit-parent` or `auto` as a value: the role runs on the parent thread's model (omit the delegate_task `target`). Alias entries in a panel list still count toward its fan-out.
 # budget: large (xhigh)
-feature, refactoring: <providerInstanceId>/<model> (<effort>)
-bug-fix: <providerInstanceId>/<model> (<effort>)
-perf-issue: <providerInstanceId>/<model> (<effort>)
-hillclimb: <providerInstanceId>/<model> (<effort>)
-judgment and prose: <providerInstanceId>/<model> (<effort>)
-hardest tasks: <providerInstanceId>/<model> (<effort>)
-how explorer: <providerInstanceId>/<model> (<effort>)
-how explainer: <providerInstanceId>/<model> (<effort>)
-why investigators: <providerInstanceId>/<model> (<effort>)
-why synthesizer: <providerInstanceId>/<model> (<effort>)
-reflect tooling: <providerInstanceId>/<model> (<effort>)
-reflect judgment, divergent, synthesizer: <providerInstanceId>/<model> (<effort>)
-arena runners: <entry>, <entry>, <entry>
-arena cross-judge pool: <entry>, <entry>, <entry>
-swarm workers: <providerInstanceId>/<model> (<effort>)
-architect runners: <entry>, <entry>, <entry>
-interrogate reviewers: <entry>, <entry>, <entry>
+feature, refactoring: claude-opus-5-5-high
+bug-fix: claude-opus-5-5-high
+perf-issue: claude-opus-5-5-high
+hillclimb: claude-opus-5-5-high
+judgment and prose: claude-opus-5-5-xhigh
+hardest tasks: claude-opus-5-5-xhigh
+how explorer: grok-4.7-xhigh-fast
+how explainer: claude-opus-5-5-xhigh
+why investigators: grok-4.7-xhigh-fast
+why synthesizer: claude-opus-5-5-xhigh
+reflect tooling: grok-4.7-xhigh-fast
+reflect judgment, divergent, synthesizer: claude-opus-5-5-xhigh
+arena runners: gpt-6.1-sol-xhigh-fast, claude-opus-5-5-xhigh
+arena cross-judge pool: gpt-6-astra-xhigh, claude-opus-5-5-xhigh
+swarm workers: claude-opus-5-5-high
+architect runners: claude-opus-5-5-xhigh, gpt-6.1-sol-xhigh-fast, gpt-6-astra-xhigh
+interrogate reviewers: claude-opus-5-5-xhigh, gpt-6-astra-xhigh
+verifier: gpt-6-astra-xhigh
 ```
 
 ### 6. Confirm

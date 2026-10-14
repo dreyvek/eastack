@@ -24,7 +24,7 @@ Infer the need from the message and the conversation. A named situation, such as
 
 Check the state that changes the answer, and mention it only when it does:
 
-- No `eastack-models.md` means `/setup-eastack` hasn't run for this user, so every role uses its default model.
+- No `eastack-models.md` in the project root or `~/.agents/` means `/setup-eastack` hasn't run for this user, so every role uses its default model.
 - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
 
 When `eastack-models.md` is missing and it matters, ask whether the user wants to pick a model for each role and a reasoning budget now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per thread. If the need is also unclear, ask both questions together. Offer two choices:
@@ -40,7 +40,7 @@ When `eastack-models.md` is missing and it matters, ask whether the user wants t
 
 Installing changes nothing until the user invokes a skill. Only `/setup-eastack` loads from the user's words. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
 
-If cost is the worry, say where the tokens go and how to spend fewer. eastack spends extra tokens on subagents and review panels. Rerun `/setup-eastack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the parent thread's model, which saves tokens when that model is cheaper. A shorter panel list runs fewer subagents, one for each entry. Save `/eastack-mode` for work that needs rigor.
+If cost is the worry, say where the tokens go and how to spend fewer. eastack spends extra tokens on subagents and review panels. Rerun `/setup-eastack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the thread's model, which saves tokens when the thread runs on Auto or a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/eastack-mode` for work that needs rigor.
 
 ## Start a task with `/eastack-mode`
 

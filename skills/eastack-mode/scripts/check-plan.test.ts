@@ -32,7 +32,7 @@ ${rule}
 - [ ] Do the thing.
 **Verify, unit.** ${rule}
 - [ ] Check the thing.
-**Verify, live.** ${rule} Ten lanes on the \`swarm workers\` role in \`eastack-models.md\` at the PR head
+**Verify, live.** ${rule} Ten lanes on \`example-model\` at the PR head
 ${Array.from({ length: 10 }, (_, i) => `- [ ] Lane ${i + 1}. Save \`lane-${i + 1}.png\`. Pass when evidence exists.`).join("\n")}
 **Verify, perf.** ${rule}
 - [ ] Metric. Recorded.
@@ -102,7 +102,12 @@ test("rejects an audit tick armed without schedule_task", () => {
 	expect(result.stderr).toContain('Program checklist lacks "schedule_task"');
 });
 
-test("rejects live lanes on a model slug instead of the swarm workers role", () => {
-	const result = runText(validPlan.replace("the \`swarm workers\` role in \`eastack-models.md\`", "\`example-model\`"), 1);
+test("accepts live lanes on a filled-in slug, bare or with an instance prefix", () => {
+	for (const slug of ["claude-opus-5-5-high", "grok-4.7-xhigh-fast", "codex/gpt-6-astra-xhigh"])
+		runText(validPlan.replace("\`example-model\`", `\`${slug}\``), 0);
+});
+
+test("rejects live lanes whose model is left as the placeholder", () => {
+	const result = runText(validPlan.replace("\`example-model\`", "\`<swarm workers model>\`"), 1);
 	expect(result.stderr).toContain("PR 1: Verify, live lacks");
 });

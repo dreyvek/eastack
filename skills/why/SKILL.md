@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Each delegation below names a role line in `eastack-models.md`. Resolve it through `orchestrator_capabilities` and pass that provider and model to `delegate_task`. Never hardcode a slug. If the line or the file is missing, use the session default and say so. Pick each delegate's reasoning option and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
+Each delegation below names a role line in the `eastack-models.md` file and a default. Set `target` to that line's value, or to the default if the file or the line is missing. Leave `target` unset when the value is `auto` or `inherit-parent`. If `delegate_task` rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from `orchestrator_capabilities`. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
 
 Every brief stands alone. A T3 child task gets only the brief, never this conversation. T3 child tasks can write, so each brief must say read-only, inspect only, no writes: no file edits, no git mutations, no writes through any MCP.
 
@@ -46,7 +46,7 @@ Map each available MCP to one evidence category:
 
 Source control is always available through git and `gh`. For the other six, classify using the MCP name, server instructions, tool names, and resource descriptors. If an MCP could fit more than one category, choose the one matching its primary evidence. Record ambiguous cases in the coverage map.
 
-Delegate one investigator per category that has a matching MCP, each owning exactly one tool or MCP. Issue every `delegate_task` call (`mode: "async"`) in a single turn so they run concurrently, then drain with `task_status`. Don't ask one investigator to cover multiple MCPs. Provider and model: the `why investigators` line.
+Delegate one investigator per category that has a matching MCP, each owning exactly one tool or MCP. Issue every `delegate_task` call (`mode: "async"`) in a single turn so they run concurrently, then drain with `task_status`. Don't ask one investigator to cover multiple MCPs. `target`: the `why investigators` line, default `grok-4.7-xhigh-fast`.
 
 Each investigator's prompt is `references/investigator-prompt.md` filled in, plus:
 - the category playbook `references/sources/<source>.md` for the selected MCP, adapted from the examples in `references/source-playbook.md`
@@ -76,7 +76,7 @@ If your scope assessment suggests a single-commit trivial target where the PR de
 
 ## Step 4. Synthesize
 
-Delegate one synthesizer with `delegate_task`. Provider and model: the `why synthesizer` line. Its brief contains:
+Delegate one synthesizer with `delegate_task`. `target`: the `why synthesizer` line, default `claude-opus-5-5-xhigh`. Its brief contains:
 1. The investigator findings, including any null results and any categories skipped with justification
 2. The code anchor
 3. The user's original question

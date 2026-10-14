@@ -24,13 +24,18 @@ Before spawning reviewers, state the intent in one clear paragraph from the user
 
 ## Step 3, Spawn Reviewers
 
-Launch all reviewers in a single turn, one `delegate_task` with `mode: "async"` per entry on the `interrogate reviewers` line in `eastack-models.md`, labeled Reviewer A, B, and so on to match the entry count. Resolve each entry's provider and model through `orchestrator_capabilities`. If the line is missing, run `setup-eastack` first.
+Launch all reviewers in a single turn, one `delegate_task` with `mode: "async"` per entry on the `interrogate reviewers` line in `eastack-models.md`, labeled Reviewer A, B, and so on to match the entry count. If the file or that line is missing, use the table defaults.
 
-Each reviewer's brief is self-contained. A delegated reviewer gets only the brief, never your context. The brief says read-only: inspect only, no writes, no git commands that change state. Omit the model for an `auto` or `inherit-parent` entry, so that reviewer runs on the parent model.
+| Subagent | Default model |
+|----------|---------------|
+| Reviewer A | `claude-opus-5-5-xhigh` |
+| Reviewer B | `gpt-6-astra-xhigh` |
 
-If `delegate_task` rejects a configured entry, say so and run that reviewer on the closest available model of the same family from `orchestrator_capabilities`. Do not block the review on it.
+Each reviewer's brief is self-contained. A delegated reviewer gets only the brief, never your context. The brief says read-only: inspect only, no writes, no git commands that change state. Each reviewer's `target` is its configured entry, or its table default when there is no configured line. Omit `target` for an `auto` or `inherit-parent` entry, so that reviewer runs on the parent model.
 
-Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Pick each delegate's reasoning option and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill. Drain results with `task_status`.
+If `delegate_task` rejects a configured entry, run that reviewer on its family's table default and say so. Families go by prefix: `claude-*`, `gpt-*`, and `grok-*` with `cursor-grok-*` and `composer-*`. A refused `grok-*` or `composer-*` entry runs on `grok-4.7-xhigh-fast`. With no family match, use Reviewer A's default. If it rejects a table default, spawn with the closest equivalent from the valid slugs in `orchestrator_capabilities` (prefer the same family and reasoning tier), and open a separate PR to update the default table. Do not block the review on the slug issue. Never treat an alias entry as a rejected slug or apply either fallback to it.
+
+Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill. Drain results with `task_status`.
 
 ## Step 4, Synthesize
 

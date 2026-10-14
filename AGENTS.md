@@ -25,7 +25,7 @@ If you are a delegated worker, your brief names the files you may write. Write o
 | pstack | eastack |
 |---|---|
 | `Task` tool, `subagent_type`, `run_in_background` | `delegate_task` with a self-contained brief; `mode: "async"` for background work; `task_status` to drain; `task_cancel` to stop |
-| Model slugs (`claude-opus-5-5-max`, `grok-4.7-xhigh-fast`, `gpt-5.6-sol-max`) | Named roles resolved from `orchestrator_capabilities` by `setup-eastack` (role names below). Never hardcode a slug. |
+| Model slugs (`claude-opus-5-5-max`, `grok-4.7-xhigh-fast`, `gpt-5.6-sol-max`) | The same slugs, per role (role names below), each resolved to a `delegate_task` target through `orchestrator_capabilities` (`drift.md` M1). |
 | "cloud agent", `environment: "cloud"`, `cloud_base_branch` | A delegated child task. Use `t3_thread_launch` only when the worker needs its own top-level thread, worktree, or branch. |
 | "each worker gets its own worktree or branch" | `t3_thread_launch` with `workspaceStrategy`: `{"type":"worktree","baseRef":...,"branch":...}`, `{"type":"existing_worktree","worktreePath":...}`, or `{"type":"root"}`. One writer per worktree. |
 | `/loop`, poll loops, `scripts/watch-pr` | `watch_pull_request`: T3 watches the PR and wakes the thread on checks finishing, new comments, or conflicts. Arm it, end the turn, triage on wake. Only a top-level thread can arm it; T3 refuses a delegated child. A merge ends the watch without a wake. For other cadences use `schedule_task`. |
@@ -45,6 +45,8 @@ Everything else in pstack transfers as written: the principles, the playbook sha
 Code work reads its line in `eastack-models.md`: `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`. Prose and judgment read `judgment and prose`; the hardest changes read `hardest tasks`.
 
 Panels and investigators: `how explorer`, `how explainer`, `why investigators`, `why synthesizer`, `arena runners`, `arena cross-judge pool`, `swarm workers`, `architect runners`, `interrogate reviewers`, `reflect tooling`, `reflect judgment, divergent, synthesizer`.
+
+Shipping's verifiers read `verifier` (`drift.md` D-M18).
 
 Keep these names exactly.
 
@@ -86,7 +88,7 @@ Keep these names exactly.
 1. Every step names a T3 mechanism, a vendor-neutral habit, or a tool upstream itself names (`gh`, Origin's `origin pr`, `deslop`). Run this over the changed files:
 
    ```bash
-   rg -n -F -e 'Cursor' -e '~/.cursor' -e '.cursor/' -e 'Task tool' -e 'subagent_type' -e 'cloud agent' -e 'environment: "cloud"' -e 'agent-transcripts' -e 'AskQuestion' -e 'icon:' -e 'option+enter' -e '/loop' -e '/visualize' -e '/create-skill' -e 'claude-' -e 'grok-' -e 'gpt-' <files>
+   rg -n -F -e 'Cursor' -e '~/.cursor' -e '.cursor/' -e 'Task tool' -e 'subagent_type' -e 'cloud agent' -e 'environment: "cloud"' -e 'agent-transcripts' -e 'AskQuestion' -e 'icon:' -e 'option+enter' -e '/loop' -e '/visualize' -e '/create-skill' <files>
    ```
 
    A hit is a Cursor leftover unless the line names Cursor only as where something comes from (pstack, `cursor-team-kit` as `deslop`'s source, Bugbot's `cursor` login) or as what eastack replaces, never as a step the agent takes, and a `drift.md` row or the name map covers it.
