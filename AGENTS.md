@@ -28,7 +28,7 @@ If you are a delegated worker, your brief names the files you may write. Write o
 | `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `html_preview` checks and `html_render` shows an HTML page in the thread. |
 | `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-eastack` writes `eastack-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
 | `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `eastack-mode`, `skills/eastack-mode/references/eastack-agent.md`, `eastack-help`, `setup-eastack`. |
-| Cursor custom modes ("press option+enter"), the `mode` and `reminder` fields | `hooks/eastack-mode.py`, a Claude Code `UserPromptSubmit` hook that `install.sh` registers. `/eastack-mode` turns the mode on for the thread, every later prompt carries the reminder, and "eastack-mode off" ends it. |
+| Cursor custom modes ("press option+enter"), the `mode` and `reminder` fields | `hooks/eastack-mode.py`, a Claude Code `UserPromptSubmit` hook that `install.sh` registers. In Claude Code, `/eastack-mode` turns the mode on for the thread, every later prompt carries the reminder, and "eastack-mode off" ends it. eastack ships no persistence hook for other providers. |
 
 Everything else in pstack transfers as written: the principles, the playbook shapes, the brief template, the reply style, the autonomy rules. Adopt it.
 
