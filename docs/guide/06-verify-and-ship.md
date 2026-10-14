@@ -109,7 +109,7 @@ An open PR starts collecting blockers immediately. Checks fail, reviewers commen
 /eastack-mode babysit this pr. get it green.
 ```
 
-Babysit arms `watch_pull_request` and ends the turn. T3 wakes the thread when checks finish, a comment lands, or the branch conflicts, and Babysit takes blockers in order: conflicts, then review threads, then CI. Every known fix batches into one push, so the checks restart once instead of after every fix. The comment triage is skeptical, because humans and bots file real catches and noise in the same list. A real finding gets a fix, and noise gets dismissed with the disproof posted on the thread. When all you want is status, ask smaller and Babysit answers without arming the watch:
+Babysit watches the PR with a bundled watcher and takes blockers in order: conflicts, then review threads, then CI. Every known fix batches into one push, so the checks restart once instead of after every fix. The comment triage is skeptical, because humans and bots file real catches and noise in the same list. A real finding gets a fix, and noise gets dismissed with the disproof posted on the thread. When all you want is status, ask smaller and Babysit answers without starting the loop:
 
 ```text
 /eastack-mode check on pr 123. anything outstanding?

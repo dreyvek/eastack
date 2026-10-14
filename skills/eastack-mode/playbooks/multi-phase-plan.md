@@ -67,7 +67,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
 
 ### Boot recipe, for every live lane
 
-Each live lane runs in its own `t3_thread_launch` thread on its own worktree at the PR head. Drive the surface through `preview_*` for browser UIs, `device_*` for simulators, and the repo's driver skill for Electron UIs, CLIs and TUIs.
+Each live lane runs in its own worktree at the PR head, per the Subagents section of `<skills>/eastack-mode/SKILL.md`. Drive the surface through `preview_*` for browser UIs, `device_*` for simulators, and the repo's driver skill for Electron UIs, CLIs and TUIs.
 
 - [ ] `git fetch origin <head-branch> && git checkout <head SHA>`.
 - [ ] <Start the backend and the surface. Wait for ready.>

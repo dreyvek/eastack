@@ -91,7 +91,7 @@ The contract above drives one task to one finish condition. Some nights hold mor
 
 ## Give each program its own coordinator thread
 
-Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch. Start your prompts to the coordinator with `/eastack-mode`, and the subagents it spawns follow the playbooks.
+Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs subagents through `delegate_task`, which run in their own worktrees by default. Start your prompts to the coordinator with `/eastack-mode`, and the subagents it spawns follow the playbooks.
 
 A few habits help:
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Swarm
 
-Fan out N parallel workers. They may cover separate slices, race the same brief, or mix both. The parent waits, aggregates, and returns one report.
+Fan out N parallel workers, each in its own worktree. They may cover separate slices, race the same brief, or mix both. The parent waits, aggregates, and returns one report.
 
 ## Start
 
@@ -27,7 +27,9 @@ Open a todolist with one entry per phase before launching anything.
 
 ## Phase B: Fan out
 
-Spawn all N workers in one turn with `delegate_task`, `mode: "async"`, and the step 4 target, left unset for `auto` or `inherit-parent`. Use `t3_thread_launch` with a `workspaceStrategy` only when a worker needs its own thread, worktree, or branch. One writer per worktree.
+Spawn all N workers in one turn with `delegate_task`, `isolation: "worktree"`, `mode: "async"`, and the step 4 target, left unset for `auto` or `inherit-parent`, per the Subagents section of the **eastack-mode** skill. Use `isolation: "shared"` only when the worker needs something only this checkout has, such as its uncommitted edits or a process running in it.
+
+When a worker must start from a non-default pushed branch, it resets its worktree to that branch first, per the same section.
 
 Every brief stands alone. Child agents get only the brief, never the parent's context. Include the goal, scope, exact slice or race arm, how to verify, and what to report. Reports use `PASS`, `ISSUES`, or `BLOCKED` with evidence. A worker that can prove a defect reports `ISSUES` and lists every issue it can prove, not only the first.
 

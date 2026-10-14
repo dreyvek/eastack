@@ -5,8 +5,8 @@ eastack is [pstack](https://github.com/cursor/plugins/tree/main/pstack) rebuilt 
 pstack is poteto's answer to AI slop code. It turns an agent into an engineering team: one mode skill that routes to playbooks, principles that ground every decision, and verification strict enough that you can parallelize with confidence. eastack keeps that system and rewires the mechanics to T3 Code's primitives:
 
 - **Delegation.** `delegate_task` child agents replace Cursor's Task tool, with per-role providers and models resolved from `orchestrator_capabilities`. Cross-model panels are native.
-- **Worktrees.** A worker that needs its own checkout runs in a `t3_thread_launch` thread bound to its own worktree and branch. Other workers share the parent's checkout. One writer per worktree.
-- **Watching.** `watch_pull_request` wakes the thread when checks finish, someone comments, or the branch conflicts. No polling loops.
+- **Worktrees.** A worker that needs its own checkout is a `delegate_task` child with `isolation: "worktree"`, in its own worktree and branch, and its completion wakes the parent. Other workers share the parent's checkout. One writer per worktree.
+- **Watching.** Babysit and Shipping run pstack's `watch-pr` in the turn until a PR or stack reaches a verdict. When the thread has other work, a watcher subagent runs it, and its completion wakes the parent.
 - **Timers.** Where a pstack playbook needs a timer that watching cannot replace, `schedule_task` runs it even when no turn is active, and the playbook deletes it when the work ends.
 - **Memory.** `t3_thread_read` and `t3_thread_search` replace mining Cursor transcript files.
 - **Proof.** `preview_*` browser tools and `device_*` simulators replace external control skills for web UIs and simulators. Screenshots and recordings land in the thread.

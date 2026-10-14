@@ -96,7 +96,9 @@ A long thread accumulates context from the last task. When you change subjects, 
 
 ## Give parallel work its own worktree
 
-If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. Delegated workers share the parent's worktree, so a worker that writes in parallel needs its own. Ask the parent thread to launch it with `t3_thread_launch` and a worktree `workspaceStrategy`, which gives it its own thread, worktree, and branch, one writer per worktree. For your own task, ask up front:
+If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a delegated worker with `isolation: "worktree"`. Each one gets its own worktree and branch, cut from the parent's last commit, so it can install dependencies, run your app, and record video of the result without touching your checkout. Ask the parent thread to hand work to workers in their own worktrees.
+
+For your own task, ask for a worktree up front:
 
 ```text
 /eastack-mode new task. branch off <base> in a fresh worktree, then port the parser change there.

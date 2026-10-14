@@ -128,7 +128,7 @@ Principles are one-rule skills that `/eastack-mode` reads and cites in its repli
 | A new model choice had no effect | The file from `/setup-eastack` applies to new threads. Start one. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
 | A skill didn't load on its own | Only `/setup-eastack` loads from the user's words. The others load when the user types them or when `/eastack-mode` runs them, and it doesn't run every skill. |
-| Parallel agents overwrote each other | Give each worker its own worktree through `t3_thread_launch`, and keep one writer per worktree. |
+| Parallel agents overwrote each other | Give each agent its own worktree, or run them as delegated workers with `isolation: "worktree"`, which each get their own checkout. |
 | An overnight run moved but finished nothing | It needs a check that can pass or fail, not a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |
 
