@@ -6,11 +6,11 @@ A skill reads as if it were written for T3 Code first. Keep pstack's sentences v
 
 ## Drift from upstream
 
-`drift.md` records every place eastack differs from upstream pstack beyond its name map: what upstream does, what eastack does, why, what would let us remove the difference, and how it was verified. A change that adds, removes, or alters a drift updates `drift.md` in the same commit. Port upstream text verbatim unless a drift row explains the difference.
+`drift.md` lists every place eastack differs from upstream pstack beyond its name map, with the reason, the condition that would remove it, and the evidence. Port upstream text verbatim unless a row there explains the difference. A change that adds, removes, or alters a difference updates `drift.md` in the same commit: it adds a row, edits one, or moves one to **Resolved**.
 
 ## Delegated workers
 
-If you are a delegated worker, your brief names the files you may write. Write only those, create parent directories as needed, and run git commands only when the brief allows them. Report back the file paths, their line counts, and the changes you made to pstack's version.
+If you are a delegated worker, your brief names the files you may write. Write only those, create parent directories as needed, and run git commands only when the brief allows them. Report back the file paths, their line counts, the changes you made to pstack's version, and the drift rows you added or cited.
 
 ## Cursor to T3 Code map
 
@@ -20,12 +20,12 @@ If you are a delegated worker, your brief names the files you may write. Write o
 | Model slugs (`claude-opus-5-5-max`, `grok-4.7-xhigh-fast`, `gpt-5.6-sol-max`) | Named roles resolved from `orchestrator_capabilities` by `setup-eastack` (role names below). Never hardcode a slug. |
 | "cloud agent", `environment: "cloud"`, `cloud_base_branch` | A delegated child task. Use `t3_thread_launch` only when the worker needs its own top-level thread, worktree, or branch. |
 | "each worker gets its own worktree or branch" | `t3_thread_launch` with `workspaceStrategy`: `{"type":"worktree","baseRef":...,"branch":...}`, `{"type":"existing_worktree","worktreePath":...}`, or `{"type":"root"}`. One writer per worktree. |
-| `/loop`, poll loops, `scripts/watch-pr` | `watch_pull_request`: T3 watches the PR and wakes the thread on checks finishing, new comments, or conflicts. Arm it, end the turn, triage on wake. For other cadences use `schedule_task`. |
+| `/loop`, poll loops, `scripts/watch-pr` | `watch_pull_request`: T3 watches the PR and wakes the thread on checks finishing, new comments, or conflicts. Arm it, end the turn, triage on wake. Only a top-level thread can arm it; T3 refuses a delegated child. A merge ends the watch without a wake. For other cadences use `schedule_task`. |
 | Hourly audit ticks, recurring runs | `schedule_task` with `{"type":"interval","everyMs":...}` or `{"type":"fixed_time","timeOfDay":...,"weekdays":[...]}`; `run_scheduled_task_now` for an immediate run. |
-| Stack bookkeeping with `gt`, manual PR lists | `link_pull_request` for every layer, immediately; `list_thread_pull_requests` returns the stack bottom to top. |
+| Stack bookkeeping, manual PR lists | `link_pull_request` for every layer, immediately; `list_thread_pull_requests` returns the stack bottom to top. |
 | `agent-transcripts/*.jsonl` mining | `t3_thread_read`, `t3_thread_search`; `t3_queue_list`/`t3_queue_read`/`t3_queue_edit`/`t3_queue_reorder`/`t3_queue_cancel`/`t3_queue_promote_to_steer` for queued input. |
 | `AskQuestion` | Ask plainly in the thread. `t3_pending_request_list`/`t3_pending_request_read`/`t3_pending_request_respond` answer questions in other threads. |
-| `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `browser.preview` shows a file to the user. |
+| `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `html_preview` checks and `html_render` shows an HTML page in the thread. |
 | `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-eastack` writes `eastack-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
 | `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `eastack-mode`, `skills/eastack-mode/references/eastack-agent.md`, `eastack-help`, `setup-eastack`. |
 | Cursor custom modes ("press option+enter"), the `mode` and `reminder` fields | `hooks/eastack-mode.py`, a Claude Code `UserPromptSubmit` hook that `install.sh` registers. `/eastack-mode` turns the mode on for the thread, every later prompt carries the reminder, and "eastack-mode off" ends it. |
@@ -67,7 +67,8 @@ Keep these names exactly.
 - Pull requests: `link_pull_request`, `list_thread_pull_requests`, `watch_pull_request`, `unwatch_pull_request`, `unlink_pull_request`
 - Schedules: `schedule_task`, `list_scheduled_tasks`, `update_scheduled_task`, `delete_scheduled_task`, `run_scheduled_task_now`
 - Queue: `t3_queue_list`, `t3_queue_read`, `t3_queue_edit`, `t3_queue_reorder`, `t3_queue_cancel`, `t3_queue_promote_to_steer`
-- Preview: `preview_open`, `preview_navigate`, `preview_snapshot`, `preview_click`, `preview_type`, `preview_press`, `preview_scroll`, `preview_wait_for`, `preview_status`, `preview_resize`, `preview_set_appearance`, `preview_recording_start`, `preview_recording_stop`, `t3_preview_list`, `t3_preview_close`
+- Preview: `preview_open`, `preview_navigate`, `preview_snapshot`, `preview_click`, `preview_type`, `preview_press`, `preview_hover`, `preview_select`, `preview_drag`, `preview_upload`, `preview_dialog`, `preview_evaluate`, `preview_scroll`, `preview_wait_for`, `preview_status`, `preview_resize`, `preview_set_appearance`, `preview_recording_start`, `preview_recording_stop`, `t3_preview_list`, `t3_preview_close`
+- Pages: `html_preview`, `html_render`
 - Devices: `device_list`, `device_open`, `device_screenshot`, `device_close`
 - Pending requests: `t3_pending_request_list`, `t3_pending_request_read`, `t3_pending_request_respond`
 
