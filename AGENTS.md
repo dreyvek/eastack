@@ -33,7 +33,8 @@ If you are a delegated worker, your brief names the files you may write. Write o
 | Stack bookkeeping, manual PR lists | `link_pull_request` for every layer, immediately; `list_thread_pull_requests` returns the stack bottom to top. |
 | `agent-transcripts/*.jsonl` mining | `t3_thread_read`, `t3_thread_search`; `t3_queue_list`/`t3_queue_read`/`t3_queue_edit`/`t3_queue_reorder`/`t3_queue_cancel`/`t3_queue_promote_to_steer` for queued input. |
 | `AskQuestion` | Ask plainly in the thread. `t3_pending_request_list`/`t3_pending_request_read`/`t3_pending_request_respond` answer questions in other threads. |
-| `control-ui`, `control-cli` (from cursor-team-kit) | `preview_*` browser tools and `device_*` simulator tools; `preview_recording_start`/`preview_recording_stop` and `device_screenshot` for evidence; `html_preview` checks and `html_render` shows an HTML page in the thread. |
+| `deslop`, `control-ui`, `control-cli` (from cursor-team-kit) | The same skills, named as upstream names them. eastack does not bundle them; they are installed alongside it in the project's `.agents/skills/`, each linked from `.claude/skills/` (see README). |
+| `/visualize` | `html_preview` checks and `html_render` shows an HTML page in the thread (`drift.md` D-N9). |
 | `~/.cursor/rules/pstack-models.mdc`, `/add-plugin` | `setup-eastack` writes `eastack-models.md`; install links `skills/*` into `.agents/skills/` and mirrors each link into `.claude/skills/` (see README). |
 | `poteto-mode`, `poteto-agent`, `poteto-help`, `setup-pstack` | `eastack-mode`, `skills/eastack-mode/references/eastack-agent.md`, `eastack-help`, `setup-eastack`. |
 | Cursor custom modes ("press option+enter"), the `mode` and `reminder` fields | `hooks/eastack-mode.py`, a Claude Code `UserPromptSubmit` hook that `install.sh` registers. In Claude Code, `/eastack-mode` turns the mode on for the thread, every later prompt carries the reminder, and "eastack-mode off" ends it. eastack ships no persistence hook for other providers. |
@@ -66,7 +67,7 @@ Keep these names exactly.
 - `skills/eastack-mode/SKILL.md` is the mode router; its playbooks live in `skills/eastack-mode/playbooks/`.
 - A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/eastack-mode/references/eastack-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
 - `skills/eastack-mode/scripts/` holds eastack-mode's tools. `worktree-audit.sh` is the audit the Worktree cleanup playbook runs. It reads only, apart from fetching the base ref, and `worktree-audit.test.sh` tests it. `orch/orch.ts` keeps orchestrate bookkeeping in plain files. `watch-pr/` is vendored from upstream and runs in Babysit, Shipping and Orchestrate. The Bun tools install their pinned dependencies through `bootstrap.ts` on first run; `node_modules/` stays git-ignored.
-- `skills/deslop/SKILL.md` is vendored unchanged from Cursor's `cursor-team-kit`, which pstack expects alongside it.
+- `deslop`, `control-ui` and `control-cli` come from Cursor's `cursor-team-kit`, which pstack expects alongside it. eastack does not bundle them; the README says how to install them.
 - `hooks/eastack-mode.py` keeps eastack-mode on for a Claude Code thread. `install.sh` registers it.
 - `drift.md` lists every difference from upstream pstack and the condition that would remove it.
 
@@ -85,12 +86,12 @@ Keep these names exactly.
 
 ## Definition of done for a skill
 
-1. Every step names a T3 mechanism, a vendor-neutral habit, or a tool upstream itself names (`gh`, Origin's `origin pr`, `deslop`). Run this over the changed files:
+1. Every step names a T3 mechanism, a vendor-neutral habit, or a tool upstream itself names (`gh`, Origin's `origin pr`, cursor-team-kit's `deslop`, `control-ui` and `control-cli`). Run this over the changed files:
 
    ```bash
    rg -n -F -e 'Cursor' -e '~/.cursor' -e '.cursor/' -e 'Task tool' -e 'subagent_type' -e 'cloud agent' -e 'environment: "cloud"' -e 'agent-transcripts' -e 'AskQuestion' -e 'icon:' -e 'option+enter' -e '/loop' -e '/visualize' -e '/create-skill' <files>
    ```
 
-   A hit is a Cursor leftover unless the line names Cursor only as where something comes from (pstack, `cursor-team-kit` as `deslop`'s source, Bugbot's `cursor` login) or as what eastack replaces, never as a step the agent takes, and a `drift.md` row or the name map covers it.
-2. Frontmatter matches the rules above, and references to other skills resolve to files in this repo.
+   A hit is a Cursor leftover unless the line names Cursor only as where something comes from (pstack, `cursor-team-kit` as the source of `deslop`, `control-ui` and `control-cli`, Bugbot's `cursor` login) or as what eastack replaces, never as a step the agent takes, and a `drift.md` row or the name map covers it.
+2. Frontmatter matches the rules above, and references to other skills resolve to files in this repo, except cursor-team-kit's `deslop`, `control-ui` and `control-cli`, which resolve to the installed skills.
 3. Every difference from the upstream file beyond the name map has a row in `drift.md` whose "Why" names its class.

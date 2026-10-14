@@ -9,7 +9,6 @@ pstack is poteto's answer to AI slop code. It turns an agent into an engineering
 - **Watching.** Babysit and Shipping run pstack's `watch-pr` in the turn, reading every record, until the playbook's stop condition. When the thread has other work, a watcher subagent runs it, and its completion wakes the parent.
 - **Timers.** Where a pstack playbook needs a timer that watching cannot replace, `schedule_task` runs it even when no turn is active, and the playbook deletes it when the work ends.
 - **Memory.** `t3_thread_read` and `t3_thread_search` replace mining Cursor transcript files.
-- **Proof.** `preview_*` browser tools and `device_*` simulators replace external control skills for web UIs and simulators. Screenshots and recordings land in the thread.
 
 [`drift.md`](drift.md) lists every place eastack differs from pstack, and why.
 
@@ -99,7 +98,7 @@ For long runs, tell [`/eastack-mode`](./skills/eastack-mode/SKILL.md) to run unt
 
 ## Skills
 
-[`/eastack-mode`](./skills/eastack-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `deslop`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). The table below is for when you want one directly:
+[`/eastack-mode`](./skills/eastack-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). The table below is for when you want one directly:
 
 ```
 /how do we cancel runs? do we have an n+1 when we look up every run to cancel?
@@ -141,7 +140,6 @@ For long runs, tell [`/eastack-mode`](./skills/eastack-mode/SKILL.md) to run unt
 | [`/show-me-your-work`](./skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
 | [`/create-verification-skill`](./skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
 | [`/maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
-| [`/deslop`](./skills/deslop/SKILL.md) | you're about to commit. removes AI code slop from the branch's diff. |
 | [`/unslop`](./skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
 | [`/bro`](./skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
 | [`/technical-writing`](./skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
@@ -242,11 +240,13 @@ Twenty-four short skills, one principle each. `eastack-mode` indexes them inline
 
 ## Not shipped here
 
-A few things pstack relies on come from Cursor's `cursor-team-kit` plugin or Cursor itself:
+A few things `eastack-mode` references but doesn't bundle:
 
-- `deslop` ships in `cursor-team-kit`. eastack vendors it unchanged as [`skills/deslop`](./skills/deslop/SKILL.md).
-- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too, and are not vendored. eastack drives web UIs with T3's `preview_*` tools and simulators with its `device_*` tools. For a CLI, a TUI or an Electron app, use the repo's own driver; eastack has not yet verified CLI driving.
+- `/deslop` and the `deslop` skill ship in the `cursor-team-kit` plugin.
+- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too.
 - `/create-skill` is a Cursor built-in. Here the [authoring a skill](./skills/eastack-mode/playbooks/authoring-a-skill.md) playbook does that job.
+
+Install `cursor-team-kit` alongside eastack if you want the full set. Outside Cursor, copy its skills from [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills) into the project's `.agents/skills/` and link each one from `.claude/skills/`, as `install.sh` does for eastack.
 
 ## Why are there no planning skills?
 
@@ -268,4 +268,4 @@ pstack also ships a dormant benny automation pack. benny triages Slack issue rep
 
 ## Credit
 
-eastack adapts [pstack](https://github.com/cursor/plugins/tree/main/pstack) by [poteto](https://x.com/poteto), by way of [p3-stack](https://github.com/uzairansaruzi/p3-stack) by Uzair Ansar. The skills, principles, and language are hers; the T3 Code rewiring is p3-stack's and this repo's. `skills/deslop` comes from Cursor's [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit), MIT, copyright 2026 Cursor. MIT, see [LICENSE](LICENSE).
+eastack adapts [pstack](https://github.com/cursor/plugins/tree/main/pstack) by [poteto](https://x.com/poteto), by way of [p3-stack](https://github.com/uzairansaruzi/p3-stack) by Uzair Ansar. The skills, principles, and language are hers; the T3 Code rewiring is p3-stack's and this repo's. MIT, see [LICENSE](LICENSE).

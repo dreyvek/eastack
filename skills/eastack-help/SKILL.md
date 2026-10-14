@@ -98,7 +98,7 @@ Close calls:
 
 Not in eastack:
 
-- `control-cli` and `control-ui` ship in the `cursor-team-kit` plugin, not in eastack. T3's `preview_*` tools drive web UIs and its `device_*` tools drive simulators. CLI and TUI driving is not verified yet, so use the repo's own harness.
+- `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin.
 - `/loop` and `/create-skill` are Cursor built-ins. Here, "run until done" routes to the Autonomous run playbook, and the [Authoring or modifying a skill playbook](../eastack-mode/playbooks/authoring-a-skill.md) drafts skills.
 - eastack has no `/orchestrate` skill. Orchestrate is a `/eastack-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
 
