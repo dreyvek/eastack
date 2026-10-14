@@ -11,7 +11,7 @@ Write `eastack-models.md`, a file that sets eastack's model per role. Default lo
 
 ### 1. Detect available models
 
-Call `orchestrator_capabilities`. It lists the providers and models you can pass to `delegate_task` in this session, custom models included, with each one's provider instance ID and any reasoning options. That is the only source. If it returns nothing, stop and tell the user. Never write a provider or model it did not return. `inherit-parent` is always valid even though it is not a detected model.
+Call `orchestrator_capabilities`. It lists the providers and models you can pass to `delegate_task` in this session, custom models included, with each one's provider instance ID and any reasoning options. That is the only source. It also lists providers that are disabled, not installed or not signed in, with `canRunChildTask: false` and the reasons in `constraints`, and `delegate_task` rejects them. Keep only the providers with `canRunChildTask: true`: their models are the detected set every later step uses. If no detected model remains, stop and show the user each provider's `constraints`. Never write a provider or model outside the detected set. `inherit-parent` is always valid even though it is not a detected model.
 
 ### 2. Load current state
 
@@ -30,11 +30,11 @@ The roles are the labels shown in step 5. If `eastack-models.md` already exists 
 
 When the catalog exposes reasoning options for a model, `unlimited`, `large`, `medium`, and `small` set the effort option of every real entry, panel entries included, to `max`, `xhigh`, `high`, or `medium`. The ladder is `max` > `xhigh` > `high` > `medium` > `low`. If the model does not expose the target, use the highest option at or below it, else mark the role as needing a choice. `inherit-parent` does not change. When the catalog exposes no reasoning options, map roles only and drop effort tokens; the budget label is still recorded.
 
-**(c) Show the roles and confirm.** Show every role with its model, marking any entry not in the detected set as needing a choice. Also list each line step 2 dropped. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` (the role runs on the parent thread's model, so omit the model in `delegate_task`) as the options. For panel roles (arena runners, architect runners, interrogate reviewers) the value is a list, and one `delegate_task` runs per entry, `inherit-parent` entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose provider differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm.
+**(c) Show the roles and confirm.** Show every role with its model, marking any entry not in the detected set as needing a choice. When the entry's provider is in the catalog with `canRunChildTask: false`, quote its `constraints` beside the entry. Also list each line step 2 dropped. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` (the role runs on the parent thread's model, so omit the model in `delegate_task`) as the options. For panel roles (arena runners, architect runners, interrogate reviewers) the value is a list, and one `delegate_task` runs per entry, `inherit-parent` entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose provider differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm.
 
 ### 4. Validate
 
-Every real entry written must be in the `orchestrator_capabilities` result, under the provider instance it came from. `inherit-parent` always passes. If a chosen entry is not available, stop and ask again.
+Every real entry written must be in the detected set, under the provider instance it came from, so its provider has `canRunChildTask: true`. `inherit-parent` always passes. If a chosen entry is not available, stop and ask again.
 
 ### 5. Write the file
 

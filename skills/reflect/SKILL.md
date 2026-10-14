@@ -12,9 +12,11 @@ Invoke when the user says "reflect" or "/reflect". Skip when the conversation is
 
 ## 1. Locate the active transcript
 
-The transcript is the current T3 thread. Read it with `t3_thread_read`; use `t3_thread_search` to pull exact passages. Do not search across other threads. That crosses workspace boundaries and reads private chats from unrelated projects.
+The transcript is the current T3 thread. Read no other thread. That crosses workspace boundaries and reads private chats from unrelated projects. `t3_thread_search` searches every thread in the project, so this workflow never calls it.
 
-Reviewers get only their brief, never the parent's context. Pass the thread id and tell them to read it with `t3_thread_read`, or write a tight digest of the session and pass that instead.
+Read the thread with `t3_thread_read` and `view: "activity"`. The default `messages` view leaves out the file reads, delegation briefs, and tool calls the reviewers judge by. Page with `afterPosition` set to each `nextPosition` until it is null. Read each item marked `textTruncated` again with its `itemId` and `textOffset` set to `nextTextOffset` until that is null.
+
+Reviewers get only their brief, never the parent's context. Pass the thread id; each template tells the reviewer how to read it. Or write a tight digest of the session and pass that instead. The digest lists every skill and tool the session used, each with its evidence (the `SKILL.md` read, the `delegate_task` brief, or the tool call), because reviewers route findings only to those.
 
 ## 2. Delegate three reviewers in parallel
 

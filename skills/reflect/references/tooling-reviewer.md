@@ -16,7 +16,7 @@ Examples of the pattern:
 - User describes a flaky test the agent could have queried via an observability MCP. Routing: the debugging skill should mention the observability MCP.
 - User links a chat thread the agent could have fetched via a chat MCP. Routing: the relevant skill should mention the chat MCP.
 
-Read the active transcript via `t3_thread_read` on thread `<THREAD_ID>` (or use the digest below if no thread id is given).
+Read the active transcript with `t3_thread_read` on thread `<THREAD_ID>` and `view: "activity"`, which keeps the file reads, delegation briefs, and tool calls that the default `messages` view leaves out. Page with `afterPosition` set to each `nextPosition` until it is null. Read each item marked `textTruncated` again with its `itemId` and `textOffset` set to `nextTextOffset` until that is null. Read no other thread, and do not call `t3_thread_search`: it searches every thread in the project. If no thread id is given, use the digest below.
 
 Scan for:
 - Tool invocations and command flags the agent had to discover
@@ -28,7 +28,7 @@ Scan for:
 
 ## Scope to skills and tools the session actually used
 
-Route findings only to skills, tools, or MCPs this transcript used. A skill counts as used when the transcript shows a file read of its `SKILL.md` (under project `.agents/skills/`, user-level `~/.agents/skills/`, or a repo-relative skill path), a `delegate_task` brief naming its path, or a tool call (shell, search, MCP, etc.) matching its documented commands. Speculative routings to skills the parent never opened do not count.
+Route findings only to skills, tools, or MCPs this transcript used. A skill counts as used when the transcript shows a file read of its `SKILL.md` (under project `.agents/skills/` or `.claude/skills/`, user-level `~/.agents/skills/` or `~/.claude/skills/`, or a repo-relative skill path), a `delegate_task` brief naming its path, or a tool call (shell, search, MCP, etc.) matching its documented commands. Speculative routings to skills the parent never opened do not count.
 
 Two finding shapes are valid:
 - The parent invoked the skill and you found a real gap in its body. Route to the skill's relevant section.
