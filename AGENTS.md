@@ -4,9 +4,13 @@ eastack adapts [pstack](https://github.com/cursor/plugins/tree/main/pstack) by p
 
 A skill reads as if it were written for T3 Code first. Keep pstack's sentences verbatim wherever they still apply. Replace every Cursor mechanism with the T3 Code equivalent below.
 
+## Drift from upstream
+
+`drift.md` records every place eastack differs from upstream pstack beyond its name map: what upstream does, what eastack does, why, what would let us remove the difference, and how it was verified. A change that adds, removes, or alters a drift updates `drift.md` in the same commit. Port upstream text verbatim unless a drift row explains the difference.
+
 ## Delegated workers
 
-If you are a delegated worker, your brief names exactly one file. Write only that file, create parent directories as needed, and run no git commands. Report back the file path, its line count, and the changes you made to pstack's version.
+If you are a delegated worker, your brief names the files you may write. Write only those, create parent directories as needed, and run git commands only when the brief allows them. Report back the file paths, their line counts, and the changes you made to pstack's version.
 
 ## Cursor to T3 Code map
 
@@ -53,6 +57,7 @@ Keep these names exactly.
 - A brief for a delegated role lives in the skill that sends it, under `references/`: `skills/eastack-mode/references/eastack-agent.md`, `skills/no-comments/references/comment-sicko.md`. The parent pastes its text into the `delegate_task` brief. It is not a harness agent definition.
 - `skills/eastack-mode/scripts/worktree-audit.sh` is the read-only audit the Worktree cleanup playbook runs.
 - `hooks/eastack-mode.py` keeps eastack-mode on for a Claude Code thread. `install.sh` registers it.
+- `drift.md` lists every difference from upstream pstack and the condition that would remove it.
 
 ## T3 tool quick reference
 
@@ -71,3 +76,4 @@ Keep these names exactly.
 1. Every step names a T3 mechanism or a vendor-neutral habit. Grep for `Cursor`, `Task tool`, `subagent_type`, `cloud agent`, `.cursor`, `agent-transcripts`, `AskQuestion`, `icon:`, `claude-`, `grok-`, `gpt-`, `/loop`. None may remain.
 2. It is shorter than the pstack source unless the T3 rewrite genuinely needs the lines.
 3. Frontmatter matches the rules above, and references to other skills resolve to files in this repo.
+4. Every difference from the upstream file beyond the name map has a row in `drift.md`.
