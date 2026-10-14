@@ -6,17 +6,26 @@ disable-model-invocation: true
 
 # Eastack help
 
-Answer the user's question about eastack, hand them a prompt they can send, and link the file the answer came from. For a help question, don't start the work. The user asked how, and a eastack run spends real tokens, so let them send the prompt.
+Answer the user's question about eastack, hand them a prompt they can send, and link the file the answer came from. For a help question, don't start the work. The user asked how, and an eastack run spends real tokens, so let them send the prompt.
 
 A message that asks for work, such as "use eastack to fix this bug", is not a help question. Read [`eastack-mode`](../eastack-mode/SKILL.md), do the work under it, and mention once that invoking `/eastack-mode` keeps the work in this style.
 
-This file maps questions to the skills and playbooks that hold the answers. Those files own the details. Read the file you route to before you quote it, and trust it when it disagrees with this map. The links here are repo-relative, so give the user the file's public copy: `https://github.com/dreyvek/eastack/blob/main/` followed by its path.
+This file maps questions to the skills and guide pages that hold the answers. Those files own the details. Read the file you route to before you quote it, and trust it when it disagrees with this map. The links here are repo-relative, so give the user the file's public copy: `https://github.com/dreyvek/eastack/blob/main/` followed by its path.
 
 ## Find out what they need
 
-Infer the need from the message and the conversation. A named situation, such as "which skill reviews a PR?", goes straight to its section. If the need is still unclear, ask one multiple-choice question with these options, then answer only the section they pick: get set up, start a task with `/eastack-mode`, pick a skill for a situation, fix a run that went wrong, or make eastack my own.
+Infer the need from the message and the conversation. A named situation, such as "which skill reviews a PR?", goes straight to its section. If the need is still unclear, ask one multiple-choice question with these options, then answer only the section they pick:
 
-Check the state that changes the answer, and mention it only when it does. No `eastack-models.md` means `/setup-eastack` hasn't run for this user, so every role uses its default model. No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app; mention `/create-verification-skill` when the question is about proving a change works.
+- Get set up
+- Start a task with `/eastack-mode`
+- Pick a skill for a situation
+- Fix a run that went wrong
+- Make eastack my own
+
+Check the state that changes the answer, and mention it only when it does:
+
+- No `eastack-models.md` means `/setup-eastack` hasn't run for this user, so every role uses its default model.
+- No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
 
 When `eastack-models.md` is missing and it matters, ask whether the user wants to pick a model for each role and a reasoning budget now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per thread. If the need is also unclear, ask both questions together. Offer two choices:
 
@@ -46,15 +55,18 @@ The default answer is `/eastack-mode`, which runs most of the others when its st
 | The user wants to | Skill |
 |---|---|
 | Do any non-trivial task with rigor | [`/eastack-mode`](../eastack-mode/SKILL.md) |
+| Check that the agent understood their goal and the problem before it starts | [`/in-your-own-words`](../in-your-own-words/SKILL.md) |
+| Aim a task higher before starting: more expert, more outcome-focused, not overspecified | [`/sharpen`](../sharpen/SKILL.md) |
 | Know how code works now, or where new code should live | [`/how`](../how/SKILL.md) |
 | Know why code is shaped this way, or where a number came from | [`/why`](../why/SKILL.md) |
 | Understand a change or subsystem, explained plainly | [`/teach`](../teach/SKILL.md) |
 | Catch up on their own recent work on a topic | [`/recall`](../recall/SKILL.md) |
+| Catch up on what changed in this thread since their last message, in a few plain sentences and small visuals, with enough context to decide each action item | [`/ketchup`](../ketchup/SKILL.md) |
 | Know what a small diff could break outside itself | [`/blast-radius`](../blast-radius/SKILL.md) |
 | Settle types and module shape before code that crosses a function boundary | [`/architect`](../architect/SKILL.md) |
 | Get several attempts at one brief, merged into the best one | [`/arena`](../arena/SKILL.md) |
 | Run parallel checks over slices, or race workers, as delegated child tasks | [`/swarm`](../swarm/SKILL.md) |
-| Have several models review a diff and try to break it | [`/interrogate`](../interrogate/SKILL.md) |
+| Have different models review a diff and try to break it | [`/interrogate`](../interrogate/SKILL.md) |
 | Fix a bug test-first when a cheap local test exists | [`/tdd`](../tdd/SKILL.md) |
 | Apply TypeScript rules to `.ts` or `.tsx` work | [`/typescript-best-practices`](../typescript-best-practices/SKILL.md) |
 | Strip comments before review, using a reviewer that didn't write them | [`/no-comments`](../no-comments/SKILL.md) |
@@ -81,22 +93,29 @@ Close calls:
 - `/arena` gives every worker the same brief and merges the best parts. `/swarm` splits work into slices or a race and returns one report.
 - `/architect` implements right after it settles the design. Add "with checkpoint" to review the design before it writes code.
 - `/interrogate` reviews the diff. `/blast-radius` looks for breakage outside the diff and proves the one fact that makes the change safe.
-- `/recall` rebuilds context across recent threads. Resuming one specific thread, delegated task, or branch is the Session pickup playbook.
+- `/recall` rebuilds context across recent threads. `/ketchup` covers only this thread since the user's last message. Resuming one specific thread, delegated task, or branch is the Session pickup playbook.
 - `/figure-it-out` designs one rigorous run. The Orchestrate playbook runs a program that spans days and many PRs. The Autonomous run playbook drives one task to a finish condition.
 
-**Not in eastack:** eastack has no `/orchestrate` skill. Orchestrate is a `/eastack-mode` playbook.
+Not in eastack:
+
+- eastack has no `/orchestrate` skill. Orchestrate is a `/eastack-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
 
 ## Playbooks and principles
 
-Playbooks are step lists inside `/eastack-mode`, not skills, so they aren't invoked by name. Inside `/eastack-mode`, describing the task picks one, and these phrases name one directly; the Playbooks section of [`eastack-mode`](../eastack-mode/SKILL.md) lists every playbook and when it applies:
+Playbooks are step lists inside `/eastack-mode`, not skills, so they have no slash command. Inside `/eastack-mode`, describing the task picks one, and these phrases name one directly:
 
 - "babysit this pr" or "check on pr 123" runs Babysit. It drives the PR to merge-ready and stops there. It doesn't merge unless the user asks to merge, land, or ship.
-- "land the stack" runs Shipping. "take over this branch" runs Session pickup. "pause safely" runs Pause safely. "run the eval playbook" runs Eval.
+- "land the stack" runs Shipping.
+- "take over this branch" runs Session pickup.
+- "pause safely" runs Pause safely.
 - "full autopilot on this queue" runs Autopilot-full. "stack them, don't ship" runs Autopilot-stack.
+- "run the eval playbook" runs Eval.
 
-eastack has no planning skill. For work that spans phases or stacked PRs, asking `/eastack-mode` for a plan runs the [Multi-phase plan playbook](../eastack-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/architect` settles it in code first.
+The Playbooks section of [`eastack-mode`](../eastack-mode/SKILL.md) lists every playbook and when it applies. [Guide page 6](../../docs/guide/06-verify-and-ship.md) covers opening, babysitting, and landing a PR.
 
-Principles are one-rule skills that `/eastack-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." Typing `/principle-<name>` still loads one on demand.
+eastack has no planning skill. T3's plan mode works alongside it. For work that spans phases or stacked PRs, asking `/eastack-mode` for a plan runs the [Multi-phase plan playbook](../eastack-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/architect` settles it in code first.
+
+Principles are one-rule skills that `/eastack-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." Typing `/principle-<name>` still loads one on demand. [Guide page 8](../../docs/guide/08-principles.md) lists them.
 
 ## Fix a run that went wrong
 
@@ -106,7 +125,7 @@ Principles are one-rule skills that `/eastack-mode` reads and cites in its repli
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
 | A new model choice had no effect | The file from `/setup-eastack` applies to new sessions. Start one. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
-| A skill didn't load on its own | Only `/setup-eastack` loads from the user's words. The others load when the user invokes them by name or when `/eastack-mode` runs them, and it doesn't run every skill. |
+| A skill didn't load on its own | Only `/setup-eastack` loads from the user's words. The others load when the user types them or when `/eastack-mode` runs them, and it doesn't run every skill. |
 | Parallel agents overwrote each other | Give each worker its own worktree through `t3_thread_launch`, and keep one writer per worktree. |
 | An overnight run moved but finished nothing | It needs a check that can pass or fail, not a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |
@@ -115,8 +134,12 @@ For a run that drifts, [`references/prompting.md`](references/prompting.md) has 
 
 ## Make eastack my own
 
-- [`/automate-me`](../automate-me/SKILL.md) drafts a personal mode skill from the user's own history, to use alongside `/eastack-mode`. [`/reflect`](../reflect/SKILL.md) after a session turns its lessons into skill edits the user approves. `/eastack-mode write a skill for <workflow>` runs the authoring playbook, and the eval playbook tests a skill change blind.
+- [`/automate-me`](../automate-me/SKILL.md) drafts a personal mode skill from the user's own history, to use alongside `/eastack-mode`.
+- [`/reflect`](../reflect/SKILL.md) after a session turns its lessons into skill edits the user approves.
+- `/eastack-mode write a skill for <workflow>` runs the authoring playbook. The eval playbook tests a skill change blind.
 - Fix a misbehaving skill in its own PR, not inside the feature work where it went wrong.
+
+[Guide page 9](../../docs/guide/09-make-it-yours.md) covers each of these.
 
 ## Reply
 

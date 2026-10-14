@@ -24,7 +24,7 @@ cd eastack
 ## Get started
 
 1. Run `/setup-eastack`. It reads `orchestrator_capabilities` and writes `eastack-models.md`, mapping each role (code, judgment, the review panels) to a provider and model you actually have.
-2. Use `/eastack-mode` whenever you want rigorous work. It reads the request, picks a playbook, and runs the other skills as the steps need them.
+2. Use `/eastack-mode` whenever you want rigorous work. It reads the request, picks a playbook, and runs the other skills as the steps need them. Start the message with `/eastack-mode`, then type your task, so the skill comes with the message.
 3. Stuck or unsure which skill fits? Type `/eastack-help` with a question. It runs only when typed.
 
 New here? The [guide](docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
@@ -35,7 +35,9 @@ New here? The [guide](docs/guide/README.md) walks you through a first real task,
 
 ## Skills
 
-architect, arena, automate-me, benchmark-checklist, blast-radius, bro, correct, create-verification-skill, figure-it-out, how, interrogate, maintain-verification-skill, make-bot-ui, no-comments, eastack-help, recall, reflect, setup-eastack, show-me-your-work, swarm, tdd, teach, technical-writing, typescript-best-practices, unslop, why.
+architect, arena, automate-me, benchmark-checklist, blast-radius, bro, correct, create-verification-skill, figure-it-out, how, in-your-own-words, interrogate, ketchup, maintain-verification-skill, make-bot-ui, no-comments, eastack-help, recall, reflect, setup-eastack, sharpen, show-me-your-work, swarm, tdd, teach, technical-writing, typescript-best-practices, unslop, why.
+
+Three run only when you type them: `/in-your-own-words` plays back your goal and the problem before the agent starts, `/sharpen` aims a task the way a top expert would without overspecifying it, and `/ketchup` catches you up on what changed in this thread since your last message.
 
 ## Principles
 
