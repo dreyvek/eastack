@@ -11,7 +11,7 @@ A loop you don't trust just produces unchecked work faster, and the mess compoun
 - You've done the task once by hand, or watched an agent do it, so you know what good looks like.
 - The agent has the tools and signals you'd use yourself: the verification skill, the profiler, the logs.
 - Every stage proves its work and can stop the line when the work misses the bar.
-- You've read a few of its threads and turned the repeated failures into tools, skills, or checks.
+- You've read a few transcripts and turned the repeated failures into tools, skills, or checks.
 
 Make the loop autonomous only after all four hold. Until then, run it while you watch.
 
@@ -37,7 +37,7 @@ Walk through what each line buys you:
 
 Because you'll review this work after stepping away, `/eastack-mode` routes it through [`/figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
 
-To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart T3 Code. The [Pause safely playbook](../../skills/eastack-mode/playbooks/pause-safely.md) finishes or backs out of the current step, cancels its delegated tasks, commits a work-in-progress checkpoint, and writes a resume note. On resume, the agent reads the thread and anything you queued while it was stopped, then starts from that note. Saying "keep going" never triggers a pause.
+To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart T3 Code. The [Pause safely playbook](../../skills/eastack-mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh thread picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
 
 ## What the loop does all night
 
@@ -65,7 +65,7 @@ When you're back, ask for the run in review form:
 /show-me-your-work catch me up on what you did last night
 ```
 
-Before the skill hands back its summary, it spawns a reviewer on a different provider or model family to read the trail and the run's thread, and the reply ends with an Attention section listing what deserves your scrutiny. Read that section first, then the log rows it points at. You're auditing decisions, not re-reading the whole night.
+Before the skill hands back its summary, it spawns a reviewer on a different provider or model family to read the trail and the transcript, and the reply ends with an Attention section listing what deserves your scrutiny. Read that section first, then the log rows it points at. You're auditing decisions, not re-reading the whole night.
 
 ## When the night holds a queue, not a task
 
@@ -83,7 +83,7 @@ The contract above drives one task to one finish condition. Some nights hold mor
 /eastack-mode autopilot these five changes but stack them, don't ship. i'll land the stack in the morning.
 ```
 
-[Orchestrate](../../skills/eastack-mode/playbooks/orchestrate.md) is for a program that outlives any single agent: multi-day, many stacked PRs, fleets of delegated workers under one standing coordinator thread. The coordinator authors briefs, drains what its workers finish, keeps the merge frontier green, and never writes code itself. It's deliberately heavy machinery. If one agent could finish the work in a session, the playbook itself routes you back to the overnight contract above:
+[Orchestrate](../../skills/eastack-mode/playbooks/orchestrate.md) is for a program that outlives any single agent: multi-day, many stacked PRs, fleets of subagents under one standing coordinator thread. The coordinator authors briefs, collects what its subagents finish, keeps the lowest unmerged PR green, and never writes code itself. It's deliberately heavy machinery. If one agent could finish the work in a session, the playbook itself routes you back to the overnight contract above:
 
 ```text
 /eastack-mode orchestrate the store migration. own it until every package is converted and merged. i'll check in twice a day.
@@ -91,7 +91,7 @@ The contract above drives one task to one finish condition. Some nights hold mor
 
 ## Give each program its own coordinator thread
 
-Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch. Start your prompts to the coordinator with `/eastack-mode`, and every brief it writes opens with the [worker brief](../../skills/eastack-mode/references/eastack-agent.md), so its workers follow the playbooks too.
+Orchestrate expects one standing coordinator thread per body of work. The coordinator doesn't write code. It directs workers with `delegate_task`, and with `t3_thread_launch` when a worker needs its own worktree and branch. Start your prompts to the coordinator with `/eastack-mode`, and the subagents it spawns follow the playbooks.
 
 A few habits help:
 
@@ -107,7 +107,7 @@ One prompt can carry a whole program, from research through execution:
 
 ## Let loops start themselves
 
-Every loop above still waits for you to start it. A scheduled or event-driven run removes that step. Software maintenance splits into stages that suit this well: triage a report, reproduce it, fix it, verify the fix. Two rules keep such a line trustworthy:
+Every loop above still waits for you to start it. A scheduled or event-driven automation removes that step. Software maintenance splits into stages that suit this well: triage a report, reproduce it, fix it, verify the fix. Two rules keep such a line trustworthy:
 
 - Every stage can stop the line. Triage can decide the report is expected behavior, repro can fail to reproduce it, and the fixer can judge the change too risky. Each of those outcomes is useful, because it keeps bad work from reaching the next stage, where it costs more to undo.
 - Every stage hands over evidence. Repro attaches screenshots and video of the broken state, and the fix attaches before-and-after proof. A human can then check that the agent fixed the right thing before reading a line of code.

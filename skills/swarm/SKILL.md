@@ -29,8 +29,6 @@ Open a todolist with one entry per phase before launching anything.
 
 Spawn all N workers in one turn with `delegate_task`, `mode: "async"`, and the step 4 target, left unset for `auto` or `inherit-parent`. Use `t3_thread_launch` with a `workspaceStrategy` only when a worker needs its own thread, worktree, or branch. One writer per worktree.
 
-When a worker must start from a non-default pushed branch, launch it with `t3_thread_launch` and set `workspaceStrategy.baseRef` to that branch with `startFromOrigin: true`.
-
 Every brief stands alone. Child agents get only the brief, never the parent's context. Include the goal, scope, exact slice or race arm, how to verify, and what to report. Reports use `PASS`, `ISSUES`, or `BLOCKED` with evidence. A worker that can prove a defect reports `ISSUES` and lists every issue it can prove, not only the first.
 
 If a worker drops out, proceed with N-1 and note it.

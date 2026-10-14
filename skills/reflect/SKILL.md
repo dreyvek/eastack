@@ -1,6 +1,6 @@
 ---
 name: reflect
-description: Delegate three parallel reviewers over the active thread, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect.
+description: Spawn three parallel review subagents over the active transcript, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect.
 disable-model-invocation: true
 ---
 
@@ -18,7 +18,7 @@ Read the thread with `t3_thread_read` and `view: "activity"`. The default `messa
 
 Reviewers get only their brief, never the parent's context. Pass the thread id; each template tells the reviewer how to read it. If `parentThreadId` is null, pass a tight digest of the session instead. The digest lists every skill and tool the session used, each with its evidence (the `SKILL.md` read, the `delegate_task` brief, or the tool call), because reviewers route findings only to those.
 
-## 2. Delegate three reviewers in parallel
+## 2. Spawn three reviewers in parallel
 
 One turn, three `delegate_task` calls with `mode: "async"`. Reviewers need tool access to look up the tickets, chat threads, and observability traces the transcript references, so do not restrict their tools.
 

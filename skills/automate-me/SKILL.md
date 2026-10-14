@@ -28,7 +28,7 @@ Update mode changes the rest of the flow:
 
 Scope the mining to the current project before fanning out. Use `t3_thread_search` and `t3_thread_read` on this project's threads only. Don't read threads from other projects. That crosses project boundaries and reads private chats from unrelated work.
 
-Survey recent threads within that scope for recurring patterns. Run multiple parallel `delegate_task` briefs (`mode: "async"`) across slices of history (e.g. last 2-4 weeks, split into 3 slices so each has enough material). Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill. Every brief stands alone: child agents get only the brief, never the parent's context. Each brief names the project, its slice, and the signals below; says read-only, inspect only, no writes; and asks for a short structured list of patterns seen with thread pointers. Drain with `task_status`. Default signals worth hunting:
+Survey recent threads within that scope for recurring patterns. Run multiple parallel `delegate_task` briefs (`mode: "async"`) across slices of history (e.g. last 2-4 weeks, split into 3 slices so each has enough material). Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill. Every brief stands alone: child agents get only the brief, never the parent's context. Each brief names the project, its slice, and the signals below, and asks for a short structured list of patterns seen with thread pointers. Drain with `task_status`. Default signals worth hunting:
 
 - Response preferences (length, tone, format, "dumb it down" corrections)
 - Delegation habits (subagents, models, specialized workflows, parallelism)
@@ -43,7 +43,7 @@ Cross-check across slices before elevating a signal. Patterns seen in 2+ slices 
 
 Mining misses intent that hasn't come up yet. Ask in the thread with short multi-choice questions rather than asking the user to type from scratch.
 
-Shape: one or two questions with 4-6 options each, multi-select for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form question catches anything the options missed.
+Shape: one or two questions with 4-6 options each, multi-select for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form chat question catches anything the options missed.
 
 Don't dump 20 questions.
 

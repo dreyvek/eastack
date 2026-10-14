@@ -1,7 +1,5 @@
 # The eastack guide
 
-eastack descends from [pstack](https://github.com/cursor/plugins/tree/main/pstack), which poteto built for Cursor. This is pstack's guide, rewired to T3 Code.
-
 eastack works best when you stop micromanaging the agent. You describe what you want and how you'll know it's done. `/eastack-mode` picks the playbook, runs the other skills as the steps need them, and shows you the evidence. This guide teaches that habit with realistic prompts.
 
 Here's what you'll learn:
@@ -12,7 +10,7 @@ Here's what you'll learn:
 4. [Design the change](./04-design.md). `/architect`, `/arena`, `/swarm`, `/interrogate`, prototypes, and plans before code locks in a shape.
 5. [Build and clean the change](./05-build-and-clean.md). The build playbooks, `/tdd`, `/unslop`, and `/no-comments`.
 6. [Verify and ship](./06-verify-and-ship.md). Prove behavior on the real app, vet numbers with `/benchmark-checklist`, then open a focused PR and drive it to merged.
-7. [Run work while you sleep](./07-overnight.md). Trust before loops, an overnight contract, a decision log you can audit, and coordinator threads and scheduled runs that scale past one agent.
+7. [Run work while you sleep](./07-overnight.md). Trust before loops, an overnight contract, a decision log you can audit, and coordinator threads and automations that scale past one agent.
 8. [Steer with principle names](./08-principles.md). The 24 names that redirect an agent mid-task.
 9. [Make it yours](./09-make-it-yours.md). Your own mode, `/correct` for repeated mistakes, and how to test a skill change.
 10. [Recipes and pitfalls](./10-recipes-and-pitfalls.md). Prompts to copy and mistakes to skip.

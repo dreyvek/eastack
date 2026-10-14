@@ -10,7 +10,7 @@ Start smaller than you think. You don't need many skills on day one, or even thi
 /automate-me
 ```
 
-You don't describe your style, because [`/automate-me`](../../skills/automate-me/SKILL.md) reads it out of your history. It mines this project's recent T3 threads with `t3_thread_search` and `t3_thread_read` for repeated preferences, in how you like replies, delegation, verification, code, prose, and process, then asks you which patterns are really you. It drafts `.agents/skills/<your-name>-mode/SKILL.md` through the Authoring or modifying a skill playbook, runs the draft through [`/unslop`](../../skills/unslop/SKILL.md), and opens a PR from a worktree so you review it like any other change.
+You don't describe your style, because [`/automate-me`](../../skills/automate-me/SKILL.md) reads it out of your history. It mines your recent threads in the active project for repeated preferences, in how you like replies, delegation, verification, code, prose, and process, then asks you which patterns are really you. It drafts `.agents/skills/<your-name>-mode/SKILL.md` through the Authoring or modifying a skill playbook, runs the draft through [`/unslop`](../../skills/unslop/SKILL.md), and opens a PR from a worktree so you review it like any other change.
 
 Run it again whenever your habits drift:
 
@@ -28,7 +28,7 @@ Right after a task that taught you something, run:
 /reflect that took way too long. capture what we learned so the next run doesn't repeat it.
 ```
 
-[`/reflect`](../../skills/reflect/SKILL.md) sends the thread to three parallel reviewers, then a synthesizer sorts the proposals into `Accepted`, `Rejected`, and `Backlog` and waits for your approval before any skill changes. Approve a proposal only if it would change a future decision. One weird session is an anecdote, not a rule.
+[`/reflect`](../../skills/reflect/SKILL.md) sends the transcript to three parallel reviewers, then a synthesizer sorts the proposals into `Accepted`, `Rejected`, and `Backlog` and waits for your approval before any skill changes. Approve a proposal only if it would change a future decision. One weird session is an anecdote, not a rule.
 
 ## Fix the environment with `/correct`
 

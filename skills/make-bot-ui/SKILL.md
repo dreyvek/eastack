@@ -1,9 +1,11 @@
 ---
 name: make-bot-ui
-description: "Use when building a custom UI (page, dashboard, buttons) that should wake the agent over a webhook, when the user must provide a webhook secret, or when exposing that UI on Tailscale."
+description: >-
+  Use when building a custom UI (page, dashboard, buttons) that should wake the
+  agent over a webhook, when the user must provide a webhook secret, or
+  when exposing that UI on Tailscale.
 disable-model-invocation: true
 ---
-
 # How to make a bot UI
 
 Build a page the user clicks. A server on this computer POSTs JSON to a webhook task. The agent wakes with that JSON. Keep the webhook URL on the server. Do not put the webhook URL in the browser or in this skill.
@@ -43,9 +45,10 @@ The server POSTs to the webhook URL with:
 - one try, no retry
 
 The POST returns HTTP 202 when the run is queued.
-Before you tell the user that the UI is live, drive the page once with `preview_open` and `preview_click`, using an action the prompt ignores, and keep a `preview_snapshot` as proof.
+Before you tell the user that the UI is live, probe once with a harmless payload.
+Use an action that the prompt ignores.
 
-If a POST can fail, append the same JSON to a local log. Drain that log on the next wake. Do not poll as the primary path. Do not send media bytes on the webhook.
+If a POST can fail, append the same JSON to a local log. Drain that log from the task. Do not poll as the primary path. Do not send media bytes on the webhook.
 
 ## Put the page on the tailnet
 

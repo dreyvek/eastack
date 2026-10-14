@@ -42,11 +42,11 @@ After setup, start a new thread. `eastack-models.md` applies to new sessions.
 
 ## Keep the cost in check
 
-eastack spends extra tokens on delegated workers and review panels. That's the price of the rigor. To spend fewer:
+eastack spends extra tokens on subagents and review panels. That's the price of the rigor. To spend fewer:
 
 - Rerun `/setup-eastack` and pick a smaller reasoning budget or cheaper models. A strong model in the main thread with cheaper, faster models in the code roles is a good split.
 - Set a role to `inherit-parent` so it runs on the thread's own model.
-- Shorten a panel list. Each entry runs one worker.
+- Shorten a panel list. Each entry runs one subagent.
 - Save `/eastack-mode` for work that needs rigor. A small, obvious edit doesn't.
 
 ## Run your first task

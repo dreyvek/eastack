@@ -54,7 +54,7 @@ Commit it only when the work is ambitious enough that a reviewer needs the trail
 
 ## Audit the log against the transcript
 
-At the end of the run, before handing back, check the log told the truth. The transcript is this T3 thread: read it with `t3_thread_read`, and use `t3_thread_search` to pull exact passages. Read only this run's thread; searching other threads reads unrelated private chats. Walk this run's rows against the thread's timeline. Each stretch of them begins at one of this run's `start` rows, or at the first row if this run created the log, and ends at the next `start` row of another run:
+At the end of the run, before handing back, check the log told the truth. Read this run's transcript: call `orchestrator_capabilities`, take `parentThreadId`, the thread that made the call, and read it with `t3_thread_read` and `view: "activity"`. Page with `afterPosition` set to each `nextPosition` until it is null. Read each item marked `textTruncated` again with its `itemId` and `textOffset` set to `nextTextOffset` until that is null. Read no other thread, and do not call `t3_thread_search`: it searches every thread in the project. That reads unrelated private chats. Walk this run's rows against what actually happened. Each stretch of them begins at one of this run's `start` rows, or at the first row if this run created the log, and ends at the next `start` row of another run:
 
 - Check that every row maps to a real decision or action.
 - Check that each row's evidence resolves and shows what the row claims.
@@ -64,9 +64,7 @@ Correct the log, not the story. The audit never edits or removes a row, even an 
 
 ## Cross-model review of the trail
 
-Before handing back, spawn a reviewer with `delegate_task` (`mode: "async"`, drained with `task_status`) on a different provider or model family from the one that did the work, resolved through `orchestrator_capabilities`; never hardcode a slug. Self-review is not a substitute. Its brief stands alone (T3 child agents get only the brief, never this conversation) and says read-only: inspect only, no writes.
-
-The reviewer reads the audit trail and the run's transcript with `t3_thread_read`, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
+Before handing back, spawn a reviewer with `delegate_task` (`mode: "async"`, drained with `task_status`) on a different provider or model family from the one that did the work, resolved through `orchestrator_capabilities`; never hardcode a slug. Self-review is not a substitute. Its brief stands alone, since T3 child agents get only the brief, never this conversation, so it names the log and the thread id. The reviewer reads the audit trail and the run's transcript, paging that thread's activity the same way, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each delegate's reasoning level and fast or standard speed for the job, per the Subagents section of the **eastack-mode** skill.
 
 - Decisions logged with weak or absent evidence.
 - Verification steps skipped or claimed without proof in the transcript.

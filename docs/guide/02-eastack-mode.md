@@ -2,7 +2,7 @@
 
 `/eastack-mode` is the front door. You give it a goal, it matches one of twenty-three playbooks, copies that playbook's steps into the todo list, and calls the other skills as the steps need them. In this page you learn what a good prompt looks like, and how little of one you actually need.
 
-![A dispatcher pulls a switch lever to route robots on rail handcars toward lit gates, under a departure board listing BUG FIX, FEATURE, and INVESTIGATION.](./images/router.jpg)
+![A dispatcher pulls a switch lever to route robots on rail handcars toward lit gates, under a /eastack-mode departure board listing BUG FIX, FEATURE, and INVESTIGATION.](./images/router.jpg)
 
 ## What happens to your prompt
 
@@ -82,7 +82,7 @@ continue
 keep going until done
 ```
 
-Short works because the playbook holds the structure, and its steps sit in the todo list. Your words carry the intent, and the skill carries the rigor. When a long thread has drifted from the task, lead the follow-up with `/eastack-mode` again.
+Short works because the playbook holds the structure, and in Claude Code a hook keeps `/eastack-mode` in context on every turn. [Set up eastack](./01-setup.md#run-your-first-task) shows how to start it. Your words carry the intent, and the skill carries the rigor.
 
 ## Switch tasks with "new task"
 
@@ -110,7 +110,7 @@ Worktrees accumulate. When disk gets tight, ask:
 /eastack-mode what's eating my disk? prune the worktrees that are safe to prune.
 ```
 
-The [Worktree cleanup playbook](../../skills/eastack-mode/playbooks/worktree-cleanup.md) classifies every worktree by merge state, uncommitted and unpushed work, open PRs, and which T3 threads still touch it. It deletes only what that evidence clears and pauses for your call on anything holding uncommitted work.
+The [Worktree cleanup playbook](../../skills/eastack-mode/playbooks/worktree-cleanup.md) classifies every worktree by merge state, uncommitted work, and which threads still touch it. It deletes only what that evidence clears and pauses for your call on anything holding uncommitted work.
 
 ## Leave it running
 

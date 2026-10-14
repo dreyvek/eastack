@@ -56,7 +56,7 @@ Teaching helps the agent as much as you. An agent that has to explain its work m
 /recall catch me up on the export work from last week
 ```
 
-[`/recall`](../../skills/recall/SKILL.md) mines your own recent T3 threads with `t3_thread_search` and `t3_thread_read`, plus the shared record (issues, prior fixes, errors still firing), and hands back a brief on where things stand and what's next. Your old threads hold context that a fresh agent lacks, so start new work on an old topic by loading it first, then hand over the new input:
+[`/recall`](../../skills/recall/SKILL.md) mines your own recent threads plus the shared record (issues, prior fixes, errors still firing) and hands back a brief on where things stand and what's next. Your old threads hold context that a fresh agent lacks, so start new work on an old topic by loading it first, then hand over the new input:
 
 ```text
 /recall my work on the virtualized list from yesterday, then read this bug report.
@@ -72,7 +72,7 @@ When another agent (or you, last week) left a branch mid-flight:
 /eastack-mode take over this branch. read the decision log, figure out what's done, and continue from there. don't redo finished work.
 ```
 
-The [Session pickup playbook](../../skills/eastack-mode/playbooks/session-pickup.md) treats the prior trail as authoritative. It reads the prior thread, delegated task, or pushed branch, reconstructs the branch state and decisions, names the resume point, and verifies inherited claims against the original goal instead of re-deriving everything from scratch.
+The [Session pickup playbook](../../skills/eastack-mode/playbooks/session-pickup.md) treats the prior trail as authoritative. It reconstructs the branch state and decisions, names the resume point, and verifies inherited claims against the original goal instead of re-deriving everything from scratch.
 
 **Pitfall:** don't skip this page's skills because "the agent will read the code anyway." An agent that starts editing without a traced model tends to fix the symptom at the first plausible spot. `/how` first is cheaper than the second bug.
 

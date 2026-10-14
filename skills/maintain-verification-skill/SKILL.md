@@ -22,7 +22,7 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
 
 ## Pass
 
-0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.agents/skills/verify-<app>/`). Several candidates → ask in the thread which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
+0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.agents/skills/verify-*/`). Several candidates → ask which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
 
 1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Lightweight; no generated inventory.
 
@@ -34,6 +34,6 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
 
 5. **Triage.** Wrong or missing user-POV description → doc drift, fix it. Working behavior the harness can't drive → harness gap, fix it; a harness fix follows the same helpers rule as generation (scripts executable, invocation documented in the skill body). App behavior that's actually broken → product gap; record it for the user, keep it out of this PR.
 
-6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first, then `link_pull_request`. For clean or blocked: no PR, report the outcome and the coverage honestly.
+6. **Ship or stop.** For changed: one PR of proven corrections, re-read every changed file first. For clean or blocked: no PR, report the outcome and the coverage honestly.
 
 Keep concise run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch location; don't commit them.
