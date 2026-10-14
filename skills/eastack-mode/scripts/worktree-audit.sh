@@ -55,27 +55,38 @@ esac
 git rev-parse --verify --quiet "$base^{commit}" >/dev/null 2>&1 || { echo "error: base ref not found: $base" >&2; exit 1; }
 
 # PR state by branch, fetched once as [{number, state, head}] with a lowercase
-# state. Empty if gh is unavailable.
+# state. If gh or jq fails, an open PR could be missed, so PR state is unknown.
+prs_known=no
 if raw=$(gh pr list --author "@me" --state all --limit 1000 \
-	--json number,state,headRefName 2>/dev/null); then
-	printf '%s' "$raw" | jq '[.[] | {number, state: (.state | ascii_downcase), head: .headRefName}]' > "$prs" 2>/dev/null
+		--json number,state,headRefName 2>/dev/null) \
+	&& printf '%s' "$raw" | jq -e 'if type == "array" then
+		[.[] | {number, state: (.state | ascii_downcase), head: .headRefName}]
+		else error("not a list") end' > "$prs" 2>/dev/null; then
+	prs_known=yes
+else
+	echo "warn: cannot list PRs with gh; PR is unknown and no row buckets as safe" >&2
 fi
-[ -s "$prs" ] || echo "[]" > "$prs"
 
 # physical <absolute path>: the path with symlinks, ".", "..", and repeated and
-# trailing slashes resolved. A path that no longer exists keeps its missing tail
-# under its nearest existing ancestor, resolved. Fails on a relative path or an
-# ancestor it cannot enter.
+# trailing slashes resolved. A path that does not fully exist resolves its
+# longest existing prefix that way and appends the missing rest as written,
+# less repeated and trailing slashes. Fails on a relative path, on a prefix it
+# cannot enter, and on a "." or ".." after the first missing component, whose
+# parent is unknown.
 physical() {
 	case "$1" in /*) ;; *) return 1 ;; esac
 	if [ -d "$1" ]; then (cd -P -- "$1" 2>/dev/null && pwd -P); return; fi
 	local part dir="" rest="" top IFS=/
 	set -f
 	for part in $1; do
-		case "$part" in ''|.) ;; ..) dir="${dir%/*}" ;; *) dir="$dir/$part" ;; esac
+		if [ -z "$part" ]; then continue
+		elif [ -n "$rest" ]; then
+			case "$part" in .|..) set +f; return 1 ;; esac
+			rest="$rest/$part"
+		elif [ -d "$dir/$part" ]; then dir="$dir/$part"
+		else rest="/$part"; fi
 	done
 	set +f
-	while [ -n "$dir" ] && [ ! -d "$dir" ]; do rest="/${dir##*/}$rest"; dir="${dir%/*}"; done
 	top=$(cd -P -- "${dir:-/}" 2>/dev/null && pwd -P) || return 1
 	printf '%s\n' "${top%/}$rest"
 }
@@ -167,9 +178,12 @@ while IFS= read -r -d '' line; do
 	*) branch=""; remote="?"; unknown=yes ;;
 	esac
 
-	pr=$([ -n "$branch" ] && jq -r --arg b "$branch" \
-		'.[] | select(.head==$b) | "#\(.number)/\(.state)"' "$prs" 2>/dev/null | head -1)
-	[ -z "$pr" ] && pr="-"
+	if [ "$prs_known" = no ]; then pr="?"; unknown=yes
+	elif [ -z "$branch" ]; then pr="-"
+	elif ! pr=$(jq -r --arg b "$branch" \
+		'[.[] | select(.head==$b) | "#\(.number)/\(.state)"] | .[0] // "-"' "$prs" 2>/dev/null); then
+		pr="?"; unknown=yes
+	fi
 
 	# Newest live thread bound to this worktree, whether it is within four
 	# days, and whether any bound thread is pinned.

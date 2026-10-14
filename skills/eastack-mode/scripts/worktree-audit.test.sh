@@ -16,7 +16,16 @@ export HOME="$tmp/home" GIT_CONFIG_NOSYSTEM=1
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com
 export GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
 mkdir -p "$HOME" "$tmp/bin"
-printf '#!/bin/sh\nexit 1\n' > "$tmp/bin/gh"
+# gh answers as GH_STUB says: "empty" lists no PRs, "garbage" prints what jq
+# cannot parse, and anything else fails.
+cat > "$tmp/bin/gh" <<'EOF'
+#!/bin/sh
+case "${GH_STUB:-}" in
+empty) echo '[]' ;;
+garbage) echo 'not json' ;;
+*) exit 1 ;;
+esac
+EOF
 # Finding 2: a git shim fails `rev-list` in the bad-rev-list worktree.
 cat > "$tmp/bin/git" <<EOF
 #!/bin/sh
@@ -52,6 +61,7 @@ add_wt "$wts/bad-status" bad-status
 add_wt "$wts/bad-rev-list" bad-rev-list
 add_wt "$wts/bad-remote-ref" bad-remote-ref
 ln -s "$wts" "$tmp/link"
+ln -s "$wts/recent" "$tmp/alias"
 
 # Finding 2: an index git cannot open makes `git status` fail.
 chmod 000 "$repo/.git/worktrees/bad-status/index"
@@ -95,7 +105,17 @@ expect() {
 	fi
 }
 
-run() { T3_STATE_DB="$1" bash "$audit" -b origin/main "$repo" > "$2" 2> "$2.err"; }
+# run <database> <output file> [gh stub mode, default empty]
+run() { GH_STUB="${3:-empty}" T3_STATE_DB="$1" bash "$audit" -b origin/main "$repo" > "$2" 2> "$2.err"; }
+
+# warns <label> <output file> <pattern>
+warns() {
+	if grep -q "$3" "$2.err"; then
+		pass=$((pass + 1)); echo "ok   $1"
+	else
+		fail=$((fail + 1)); echo "FAIL $1"
+	fi
+}
 
 # One database for the good paths and findings 2 and 3.
 make_db "$tmp/state.sqlite" \
@@ -104,10 +124,11 @@ make_db "$tmp/state.sqlite" \
 	"$wts/./dot-pinned" old yes \
 	"$tmp/link/link-pinned" old yes \
 	"$wts/space pinned" old yes \
-	"$wts/clean-merged-gone" now yes
+	"$wts/clean-merged-gone" now yes \
+	"$tmp/alias/../gone" now yes
 out="$tmp/out"
 run "$tmp/state.sqlite" "$out"
-expect "clean merged worktree" "$out" "$wts/clean-merged" safe
+expect "clean merged worktree, valid empty PR list" "$out" "$wts/clean-merged" safe
 expect "recent thread" "$out" "$wts/recent" verify-recent-thread
 expect "pinned thread" "$out" "$wts/pinned" hold-pinned
 expect "finding 3: pin bound through ./" "$out" "$wts/dot-pinned" hold-pinned
@@ -139,11 +160,28 @@ run "$tmp/locked.sqlite" "$out"
 chmod 700 "$tmp/locked"
 expect "finding 3: unresolvable thread binding" "$out" "$wts/clean-merged" review
 
+# A binding through a symlink and then ".." resolves physically while every
+# directory on it exists. Once one is gone, a ".." after it has no known
+# parent, so the binding could name any worktree.
+make_db "$tmp/dotdot.sqlite" "$tmp/alias/../deleted/../clean-merged" old yes
+mkdir "$wts/deleted"
+run "$tmp/dotdot.sqlite" "$out"
+expect "pin through a symlink and .., every directory present" "$out" "$wts/clean-merged" hold-pinned
+rmdir "$wts/deleted"
+run "$tmp/dotdot.sqlite" "$out"
+expect "pin through a symlink and .. past a missing directory" "$out" "$wts/clean-merged" review
+
 # Unreadable database: thread state is unknown, so nothing is safe.
 run "$tmp/missing.sqlite" "$out"
 expect "unreadable database" "$out" "$wts/clean-merged" review
-grep -q 'cannot read T3 threads' "$out.err" && pass=$((pass + 1)) && echo "ok   unreadable database warns" \
-	|| { fail=$((fail + 1)); echo "FAIL unreadable database warns"; }
+warns "unreadable database warns" "$out" 'cannot read T3 threads'
+
+# Failed PR discovery: an open PR could be missed, so nothing is safe.
+run "$tmp/state.sqlite" "$out" fail
+expect "failing gh" "$out" "$wts/clean-merged" review
+warns "failing gh warns" "$out" 'cannot list PRs'
+run "$tmp/state.sqlite" "$out" garbage
+expect "PR list jq cannot parse" "$out" "$wts/clean-merged" review
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]
