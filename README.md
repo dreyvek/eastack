@@ -5,9 +5,9 @@ eastack is [pstack](https://github.com/cursor/plugins/tree/main/pstack) rebuilt 
 pstack is poteto's answer to AI slop code. It turns an agent into an engineering team: one mode skill that routes to playbooks, principles that ground every decision, and verification strict enough that you can parallelize with confidence. eastack keeps that system and rewires the mechanics to T3 Code's primitives:
 
 - **Delegation.** `delegate_task` child agents replace Cursor's Task tool, with per-role providers and models resolved from `orchestrator_capabilities`. Cross-model panels are native.
-- **Worktrees.** `t3_thread_launch` binds a worker to its own worktree and branch. One writer per worktree.
+- **Worktrees.** A worker that needs its own checkout runs in a `t3_thread_launch` thread bound to its own worktree and branch. Other workers share the parent's checkout. One writer per worktree.
 - **Watching.** `watch_pull_request` wakes the thread when checks finish, someone comments, or the branch conflicts. No polling loops.
-- **Timers.** Where a pstack playbook needs a timer that watching cannot replace, `schedule_task` runs it even when no turn is active.
+- **Timers.** Where a pstack playbook needs a timer that watching cannot replace, `schedule_task` runs it even when no turn is active, and the playbook deletes it when the work ends.
 - **Memory.** `t3_thread_read` and `t3_thread_search` replace mining Cursor transcript files.
 - **Proof.** `preview_*` browser tools and `device_*` simulators replace external control skills for web UIs and simulators. Screenshots and recordings land in the thread.
 
@@ -27,16 +27,18 @@ cd eastack
 
 ## Get started
 
-1. Run [`/setup-eastack`](./skills/setup-eastack/SKILL.md). It reads `orchestrator_capabilities` and writes `eastack-models.md`, mapping each role (code, judgment, the review panels) to a provider and model you actually have.
-2. Use [`/eastack-mode`](./skills/eastack-mode/SKILL.md) whenever you're doing anything that requires rigor. Pick `/eastack-mode` from the `/` menu before you type your task, so T3 attaches the skill to the message.
+1. Run [`/setup-eastack`](./skills/setup-eastack/SKILL.md), pick a reasoning budget, and choose which models you want.
+2. Use [`/eastack-mode`](./skills/eastack-mode/SKILL.md) whenever you're doing anything that requires rigor.
 
-New here? The [eastack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. Stuck, or unsure which skill fits? Ask [`/eastack-help`](./skills/eastack-help/SKILL.md). It runs only when typed.
+New here? The [eastack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. Stuck, or unsure which skill fits? Ask [`/eastack-help`](./skills/eastack-help/SKILL.md).
 
 That's it. The other skills are situational; the mode skill uses them for you as needed. Out of the box, code delegates (feature, refactoring, bug fix, perf, hillclimb) and swarm workers go to Opus 5.5 at high reasoning, while the hardest changes, prose, and judgment go to Opus 5.5 at xhigh. Explorers, investigators and reflect's tooling reviewer go to Grok. The default panels pair Opus 5.5 with GPT-6.1 Sol and GPT-6 Astra, and Shipping's verifiers run on GPT-6 Astra. [`/setup-eastack`](./skills/setup-eastack/SKILL.md) changes any of it.
 
 ## Usage
 
 Use [`/eastack-mode`](./skills/eastack-mode/SKILL.md) at the start of a task. It reads your request, picks from a set of playbooks, and runs the other skills as the steps need them.
+
+Pick `/eastack-mode` from the `/` menu before you type your task, so T3 attaches the skill to the message.
 
 ### Just use [`/eastack-mode`](./skills/eastack-mode/SKILL.md)
 
@@ -72,7 +74,7 @@ morning.
 | [babysit](./skills/eastack-mode/playbooks/babysit.md) | drive a pr or a stack to merge-ready: conflicts, review threads, ci. |
 | [shipping](./skills/eastack-mode/playbooks/shipping.md) | independently verify a green stack, then land the contiguous verified run bottom-up through github by default or origin when available. |
 | [autonomous run](./skills/eastack-mode/playbooks/autonomous-run.md) | drive a long task to completion without stopping. |
-| [orchestrate](./skills/eastack-mode/playbooks/orchestrate.md) | a standing project handed to one coordinator thread: multi-day, many stacked prs, fleets of delegated tasks. |
+| [orchestrate](./skills/eastack-mode/playbooks/orchestrate.md) | a standing project handed to one coordinator thread: multi-day, many stacked prs, fleets of subagents. |
 | [autopilot-full](./skills/eastack-mode/playbooks/autopilot-full.md) | run independent prs to merged with one owner per pr and a root swarm verdict on each round, from the code-ready head on. |
 | [autopilot-stack](./skills/eastack-mode/playbooks/autopilot-stack.md) | build and verify one linear base-branch stack for the operator to review and land. |
 | [session pickup](./skills/eastack-mode/playbooks/session-pickup.md) | resume or take over a prior agent's in-flight work. |
@@ -93,7 +95,7 @@ The full rules and playbooks live in [`skills/eastack-mode/SKILL.md`](./skills/e
 
 In Claude Code, `/eastack-mode` stays on across turns through the hook `install.sh` registers (see Install). It applies itself when a playbook matches or the task needs rigor, and stays out of the way otherwise. Other providers have no such hook, so send `/eastack-mode` again on the message that needs it.
 
-For long runs, tell [`/eastack-mode`](./skills/eastack-mode/SKILL.md) to run until done. You can make the agent work for many hours without sacrificing rigor.
+For long runs, tell [`/eastack-mode`](./skills/eastack-mode/SKILL.md) to run until done, with a check that can pass or fail. The Autonomous run playbook drives to it, woken by a watcher subagent's completion or by a `schedule_task` heartbeat it deletes when the run ends. You can make the agent work for many hours without sacrificing rigor.
 
 ## Skills
 
@@ -194,7 +196,7 @@ help:              /eastack-help which skill should i use to review this branch?
 
 ## The `eastack-agent` and Comment Sicko briefs
 
-[`/eastack-mode`](./skills/eastack-mode/SKILL.md) runs in the thread that receives it. That thread owns the playbook, the todo list, and every `delegate_task`.
+[`/eastack-mode`](./skills/eastack-mode/SKILL.md) runs in the thread that receives it. That thread owns the playbook, the todo list, and every subagent spawn.
 
 eastack also ships [`eastack-agent`](./skills/eastack-mode/references/eastack-agent.md), the brief the parent pastes into every delegate spawned during a run. It has the delegate read `eastack-mode` in full, including its inline principles index, before doing any work. A delegate briefed without it skips that read and drifts. Do not paste `eastack-agent` into a brief to run the playbook itself.
 
@@ -232,7 +234,7 @@ Twenty-four short skills, one principle each. `eastack-mode` indexes them inline
 | [sequence-verifiable-units](./skills/principle-sequence-verifiable-units/SKILL.md) | verification | Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer. |
 | [test-behavior-not-implementation](./skills/principle-test-behavior-not-implementation/SKILL.md) | verification | Apply when you write, change, or keep a test. Call the code the way its users do and assert the result they observe against a literal expected value. If the test would still pass when every imported function returns undefined, rewrite the assertion or delete the test. |
 | [explain-the-number](./skills/principle-explain-the-number/SKILL.md) | verification | Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think. |
-| [guard-the-context-window](./skills/principle-guard-the-context-window/SKILL.md) | delegation | Route bulk to delegated tasks; keep summaries in the main thread, not raw payloads. |
+| [guard-the-context-window](./skills/principle-guard-the-context-window/SKILL.md) | delegation | Route bulk to subagents; keep summaries in the main thread, not raw payloads. |
 | [never-block-on-the-human](./skills/principle-never-block-on-the-human/SKILL.md) | delegation | Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions. |
 | [encode-lessons-in-structure](./skills/principle-encode-lessons-in-structure/SKILL.md) | meta | Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
 
