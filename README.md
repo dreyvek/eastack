@@ -6,7 +6,7 @@ pstack is poteto's answer to AI slop code. It turns an agent into an engineering
 
 - **Delegation.** `delegate_task` child agents replace Cursor's Task tool, with per-role providers and models resolved from `orchestrator_capabilities`. Cross-model panels are native.
 - **Worktrees.** A worker that needs its own checkout is a `delegate_task` child with `isolation: "worktree"`, in its own worktree and branch, and its completion wakes the parent. Other workers share the parent's checkout. One writer per worktree.
-- **Watching.** Babysit and Shipping run pstack's `watch-pr` in the turn until a PR or stack reaches a verdict. When the thread has other work, a watcher subagent runs it, and its completion wakes the parent.
+- **Watching.** Babysit and Shipping run pstack's `watch-pr` in the turn, reading every record, until the playbook's stop condition. When the thread has other work, a watcher subagent runs it, and its completion wakes the parent.
 - **Timers.** Where a pstack playbook needs a timer that watching cannot replace, `schedule_task` runs it even when no turn is active, and the playbook deletes it when the work ends.
 - **Memory.** `t3_thread_read` and `t3_thread_search` replace mining Cursor transcript files.
 - **Proof.** `preview_*` browser tools and `device_*` simulators replace external control skills for web UIs and simulators. Screenshots and recordings land in the thread.

@@ -96,7 +96,7 @@ A long thread accumulates context from the last task. When you change subjects, 
 
 ## Give parallel work its own worktree
 
-If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a delegated worker with `isolation: "worktree"`. Each one gets its own worktree and branch, cut from the parent's last commit, so it can install dependencies, run your app, and record video of the result without touching your checkout. Ask the parent thread to hand work to workers in their own worktrees.
+If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a subagent with `isolation: "worktree"`. Each one gets its own worktree and branch, cut from the parent's last commit, so it can install dependencies, run your app, and record video of the result without touching your checkout. Ask the parent thread to hand work to subagents in their own worktrees.
 
 For your own task, ask for a worktree up front:
 
