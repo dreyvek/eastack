@@ -24,7 +24,7 @@ Run:
 
 [`/setup-eastack`](../../skills/setup-eastack/SKILL.md) reads `orchestrator_capabilities` to find the providers and models you have, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `eastack-models.md`, a small file every eastack skill reads, at the project root or globally at `~/.agents/eastack-models.md`. A project file wins over the global one.
 
-The `large` budget runs each model at `xhigh` reasoning. `unlimited` lifts each model to the highest reasoning option `orchestrator_capabilities` lists for it, up to `max`, so a model that tops out at `xhigh` stays there. `medium` and `small` lower the reasoning and spend fewer tokens.
+The `large` budget targets `xhigh`, using the highest supported option at or below it. `unlimited` takes the highest reasoning option `orchestrator_capabilities` exposes for each model. `medium` and `small` lower the reasoning and spend fewer tokens.
 
 eastack ships no default models. Every entry in the file is a provider and model `orchestrator_capabilities` returned, so a skill reads the role's model from `eastack-models.md` and never names one you can't run. A rerun of `/setup-eastack` keeps any role you changed.
 

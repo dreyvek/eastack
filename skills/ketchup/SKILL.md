@@ -30,7 +30,7 @@ Show each action item as a before and after, side by side, in a visual. For a ch
 
 ## Visuals
 
-A visual is a picture: a screenshot saved with `preview_snapshot` (`save=true`) or `device_screenshot`, a video from `preview_recording_stop`, a Mermaid diagram, a chart or diagram on a self-contained HTML page that you check with `html_preview` and publish with `html_render`, or a generated image. A Markdown table is not a visual, even with before and after columns.
+A visual is a picture: a screenshot saved with `preview_snapshot` (`save=true`), a screenshot or video that already exists, a Mermaid diagram, a chart or diagram on a self-contained HTML page that you check with `html_preview` and publish with `html_render`, or a generated image. A Markdown table is not a visual, even with before and after columns.
 
 Keep each visual small enough to read at a glance: at most six boxes, with at most eight words in each, not counting "No screenshot yet." Write labels as plain words a person would say, not tags like "Tests: pass". Group small items into one box. A fact that needs a sentence belongs in the text, or nowhere.
 

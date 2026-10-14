@@ -24,7 +24,7 @@ cd eastack
 ## Get started
 
 1. Run `/setup-eastack`. It reads `orchestrator_capabilities` and writes `eastack-models.md`, mapping each role (code, judgment, the review panels) to a provider and model you actually have.
-2. Use `/eastack-mode` whenever you want rigorous work. It reads the request, picks a playbook, and runs the other skills as the steps need them. Start the message with `/eastack-mode`, then type your task, so the skill comes with the message.
+2. Use `/eastack-mode` whenever you want rigorous work. It reads the request, picks a playbook, and runs the other skills as the steps need them. Pick `/eastack-mode` from the `/` menu before you type your task, so T3 attaches the skill to the message.
 3. Stuck or unsure which skill fits? Type `/eastack-help` with a question. It runs only when typed.
 
 New here? The [guide](docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
